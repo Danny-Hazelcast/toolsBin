@@ -18,6 +18,10 @@ sudo yum -y install sysstat;
 sudo yum -y install iotop;
 
 sudo sed -i s/"1024"/"64000"/g /etc/security/limits.d/90-nproc.conf;
+
+sudo su;
+echo "*  soft  core  unlimited" >> /etc/security/limits.conf;
+
 sudo reboot;
 
 EOF

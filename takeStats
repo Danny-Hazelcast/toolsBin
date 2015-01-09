@@ -4,7 +4,7 @@ interval=${2:-30}
 
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no stabilizer@${box} << EOF
 
-  sudo iotop -tbod $interval > $1-iotop.out &
+  #sudo iotop -tbod $interval > $1-iotop.out &
   netstat -s $interval > $1-netStat.out &
   mpstat -P ALL $interval > $1-mpstats.out &
   vmstat $interval > $1-vmstats.out &
