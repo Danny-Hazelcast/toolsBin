@@ -1,7 +1,0 @@
-ip=$1
-
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no stabilizer@${ip} << EOF
-
-java -version
-
-EOF
