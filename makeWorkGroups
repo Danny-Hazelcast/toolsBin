@@ -1,0 +1,26 @@
+args=( "$@" )
+
+membersXml=$(forIpsIn agents.txt echoMemberXml)
+addressXml=$(forIpsIn agents.txt echoAddressXml)
+
+start=1
+i=1
+for sz in "${args[@]}"; do
+
+   mkdir -p group${i}
+
+   end=$(($start+$sz-1))
+   sed -n ${start},${end}p agents.txt > group${i}/agents.txt
+   start=$(($start+$sz))
+
+   cp $STABILIZER_HOME/conf/hazelcast.xml group${i}/
+   sed -i s/'<!--MEMBERS-->'/${membersXml}/g group${i}/hazelcast.xml
+ 
+   cp $STABILIZER_HOME/conf/client-hazelcast.xml group${i}/
+   sed -i s/'<!--MEMBERS-->'/${addressXml}/g group${i}/client-hazelcast.xml
+
+   cp runGroup.sh group${i}/
+   cp testGroup${i}.properties group${i}/test.properties
+
+   ((i++))
+done

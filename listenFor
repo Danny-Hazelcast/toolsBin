@@ -1,0 +1,28 @@
+#!/bin/bash
+
+return_code() { return $1; } 
+
+targetFile=$1
+actionTriger=$2
+timeoutSec=${3:-120}   
+
+fifo=myPipe
+mkfifo "${fifo}"|| exit 1
+{
+    tail -f ${targetFile} &
+    tailpid=$!
+
+    read code <${fifo}
+    kill "${tailpid}"
+    if (( $code > 0 )) ; then
+       echo "time-out waiting for ${actionTriger} in ${targetFile}" 1>&2
+    fi
+    return_code $code
+
+} | {
+    timeout "${timeoutSec}" grep -oh -m 1 "${actionTriger}"
+    echo $? >${fifo}
+}
+ret=${PIPESTATUS[0]}
+rm "${fifo}"
+exit $ret

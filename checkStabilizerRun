@@ -1,0 +1,6 @@
+#!/bin/sh
+
+DEFAULT_FILENAME=nohup.out
+target=${1:-$DEFAULT_FILENAME}
+
+find . -name "${target}" | xargs -I % sh -c 'echo %; cat % | grep -i "Provisioning\|provisioned\|Finished terminating\|Failure #1 \|failures have been detected"; echo"" '
