@@ -1,0 +1,12 @@
+#!/bin/sh
+
+ip=$1
+cmd=$2
+
+echo $cmd 
+
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no stabilizer@${ip} <<EOF
+
+$cmd
+
+EOF

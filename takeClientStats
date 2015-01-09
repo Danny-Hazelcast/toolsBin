@@ -1,0 +1,12 @@
+
+box=$1
+interval=${2:-30}
+
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no stabilizer@${box} << EOF
+
+  jps | grep Client.* | cut -d ' ' -f1 | xargs -L 1 -I% sh -c 'pidstat -p % $interval > client-%-$1-pidStatsOverView.out &'
+  #jps | grep Client.* | cut -d ' ' -f1 | xargs -L 1 -I% pidstat -p % -r $interval > client-$1-pidStatsMem.out &
+  #jps | grep Client.* | cut -d ' ' -f1 | xargs -L 1 -I% pidstat -p % -d $interval > client-$1-pidStatsIO.out &
+  #jps | grep Client.* | cut -d ' ' -f1 | xargs -L 1 -I% pidstat -p % -w -I -t $interval > client-$1-pidStatsSwitch.out &
+
+EOF
