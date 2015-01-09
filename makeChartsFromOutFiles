@@ -1,0 +1,79 @@
+tempDir="tempCsvDump"
+mkdir -p ${tempDir}
+
+
+#09:27:43 PM  CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal  %guest   %idle
+files="*mpstats.out"
+append=".all.csv"
+ls ${files} | xargs -n1 -I% sh -c "grep all % | sed 's/  */, /g' > ${tempDir}/%.all.csv"
+
+plotAllCsv "${tempDir}/${files}${append}" 4 %usr
+plotAllCsv "${tempDir}/${files}${append}" 5 %nice
+plotAllCsv "${tempDir}/${files}${append}" 6 %sys
+plotAllCsv "${tempDir}/${files}${append}" 7 %iowait
+plotAllCsv "${tempDir}/${files}${append}" 8 %irq
+plotAllCsv "${tempDir}/${files}${append}" 9 %soft
+plotAllCsv "${tempDir}/${files}${append}" 10 %steal
+plotAllCsv "${tempDir}/${files}${append}" 11 %guest
+plotAllCsv "${tempDir}/${files}${append}" 12 %idle
+
+
+
+#09:27:43 PM     IFACE   rxerr/s   txerr/s    coll/s  rxdrop/s  txdrop/s  txcarr/s  rxfram/s  rxfifo/s  txfifo/s
+files="*errorNet.out"
+append=".eth0.csv"
+ls ${files} | xargs -n1 -I% sh -c "grep eth0 % | sed 's/  */, /g' > ${tempDir}/%${append}"
+
+plotAllCsv "${tempDir}/${files}${append}" 4 rxerrs
+plotAllCsv "${tempDir}/${files}${append}" 5 txerrs
+plotAllCsv "${tempDir}/${files}${append}" 6 colls
+plotAllCsv "${tempDir}/${files}${append}" 7 rxdrops
+plotAllCsv "${tempDir}/${files}${append}" 8 txdrops
+plotAllCsv "${tempDir}/${files}${append}" 9 txcarrs
+plotAllCsv "${tempDir}/${files}${append}" 10 rxframs
+plotAllCsv "${tempDir}/${files}${append}" 11 rxfifos
+plotAllCsv "${tempDir}/${files}${append}" 12 txfifos
+
+
+
+#09:27:43 PM     IFACE   rxpck/s   txpck/s    rxkB/s    txkB/s   rxcmp/s   txcmp/s  rxmcst/s
+files="*net.out"
+append=".eth0.csv"
+ls ${files} | xargs -n1 -I% sh -c "grep eth0 % | sed 's/  */, /g' > ${tempDir}/%${append}"
+
+plotAllCsv "${tempDir}/${files}${append}" 4 rxpcks
+plotAllCsv "${tempDir}/${files}${append}" 5 txpcks
+plotAllCsv "${tempDir}/${files}${append}" 6 rxkBs
+plotAllCsv "${tempDir}/${files}${append}" 7 txkBs
+plotAllCsv "${tempDir}/${files}${append}" 8 rxcmps
+plotAllCsv "${tempDir}/${files}${append}" 9 txcmps
+plotAllCsv "${tempDir}/${files}${append}" 10 rxmcsts
+
+
+
+#09:27:43 PM   runq-sz  plist-sz   ldavg-1   ldavg-5  ldavg-15
+files="*runQ.out"
+append=".csv"
+ls ${files} | xargs -n1 -I% sh -c "sed 's/  */, /g' % > ${tempDir}/%${append}"
+
+plotAllCsv "${tempDir}/${files}${append}" 3 runq-sz
+plotAllCsv "${tempDir}/${files}${append}" 4 plist-sz
+plotAllCsv "${tempDir}/${files}${append}" 5 ldavg-1
+plotAllCsv "${tempDir}/${files}${append}" 6 ldavg-5
+plotAllCsv "${tempDir}/${files}${append}" 7 ldavg-15
+
+
+
+#09:27:43 PM    totsck    tcpsck    udpsck    rawsck   ip-frag    tcp-tw
+files="*sock.out"
+append=".csv"
+ls ${files} | xargs -n1 -I% sh -c "sed 's/  */, /g' % > ${tempDir}/%${append}"
+
+plotAllCsv "${tempDir}/${files}${append}" 3 totsck
+plotAllCsv "${tempDir}/${files}${append}" 4 tcpsck
+plotAllCsv "${tempDir}/${files}${append}" 5 udpsck
+plotAllCsv "${tempDir}/${files}${append}" 6 rawsck
+plotAllCsv "${tempDir}/${files}${append}" 7 ip-frag
+plotAllCsv "${tempDir}/${files}${append}" 8 tcp-tw
+
+

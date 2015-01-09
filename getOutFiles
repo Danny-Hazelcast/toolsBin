@@ -1,0 +1,5 @@
+ip=$1
+
+scp stabilizer@${ip}:~/*.out . 
+
+

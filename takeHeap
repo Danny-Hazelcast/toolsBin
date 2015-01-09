@@ -1,0 +1,7 @@
+ip=$1
+
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no stabilizer@${ip} << EOF
+
+  jps | grep Member.* | cut -d ' ' -f1 | xargs -L 1 -I% jmap -dump:file=member-$1-heap.out %
+
+EOF

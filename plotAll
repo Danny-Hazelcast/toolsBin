@@ -1,0 +1,35 @@
+#!/bin/bash
+#
+# Plot multiple files (by wildcard) in one diagram.
+# Usage (in this directory as example files):
+#
+#   ./plot-multiple.sh  a*
+#
+# Generates gnuplot script and executes it.
+
+#we dont have the default font in the default place  cus no x11 ect
+export GDFONTPATH=/usr/share/fonts/liberation/
+export GNUPLOT_DEFAULT_GDFONT="LiberationSans-Regular"
+
+FILE_PATTERN=$1
+outFile=$2
+
+files=$(ls ${FILE_PATTERN} | xargs -n1 -Ix echo -n '"x" with lines,')
+files="${files%?}"
+
+gnuplot_script=`mktemp`
+cat > $gnuplot_script <<EOF
+
+set format y "%t"
+set terminal png enhanced size 1280,1024
+set output "$outFile"
+#set key left top
+set key right bottom
+plot $files
+
+EOF
+#cat $gnuplot_script
+
+gnuplot $gnuplot_script
+
+s3cp plot.jpg s3://stabilizer/temp/plot.jpg

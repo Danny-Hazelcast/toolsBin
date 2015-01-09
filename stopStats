@@ -1,0 +1,9 @@
+ip=$1
+
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no stabilizer@${ip} << EOF
+  sudo killall -9 iotop;
+  killall -9 netstat;
+  killall -9 mpstat;
+  killall -9 sar;
+  killall -9 pidstat;
+EOF
