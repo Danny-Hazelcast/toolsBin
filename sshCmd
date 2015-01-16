@@ -3,7 +3,7 @@
 ip=$1
 cmd=$2
 
-echo $cmd 
+echo "$ip -> $cmd" 
 
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no stabilizer@${ip} <<EOF
 
