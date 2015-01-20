@@ -26,6 +26,7 @@ clientJvmArgs="-Xmx$clientHeapSZ -XX:+HeapDumpOnOutOfMemoryError"
 clientJvmArgs="$clientJvmArgs $gcArgs"
 
 if ! provisioner --scale ${boxCount} ; then
+  echo "provision FAIL"
   exit 1
 fi
 provisioner --clean

@@ -53,12 +53,13 @@ case $profile in
         ;;
     weekly)
         duration=3h
+	;;
     test)
 	duration=1m
         ;;
     *)
-      	echo "Unknown duration profile"
-        exit 1
+      	echo "duration = $profile"
+	duration=$profile
 esac
 
 nohup runStabilizer ${boxCount} ${memberBox} ${members} ${clients} ${duration} &
