@@ -38,7 +38,7 @@ case $clusterProfile in
         exit 1
 esac
 
-case $profile in
+case $durationProfile in
     final)
 	duration=48h
         ;;
@@ -58,8 +58,8 @@ case $profile in
 	duration=1m
         ;;
     *)
-      	echo "duration = $profile"
-	duration=$profile
+      	echo "duration profile not found"
+	exit 1
 esac
 
 nohup runStabilizer ${boxCount} ${memberBox} ${members} ${clients} ${duration} &
