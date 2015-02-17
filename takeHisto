@@ -1,6 +1,7 @@
 ip=$1
+user=${2:-stabilizer}
 
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no stabilizer@${ip} << EOF
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${user}@${ip} << EOF
 
   jps | grep Member.* | cut -d ' ' -f1 | xargs -L 1 -I%  jmap -histo % > member-$1-histo.out
 

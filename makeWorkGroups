@@ -1,7 +1,7 @@
 args=( "$@" )
 
-membersXml=$(forIpsIn agents.txt echoMemberXml)
-addressXml=$(forIpsIn agents.txt echoAddressXml)
+membersXml=$(forPrivateIpsIn agents.txt echoMemberXml)
+addressXml=$(forPrivateIpsIn agents.txt echoAddressXml)
 
 start=1
 i=1

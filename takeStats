@@ -1,8 +1,9 @@
 
 box=$1
 interval=${2:-30}
+user=${3:-stabilizer}
 
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no stabilizer@${box} << EOF
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${user}@${box} << EOF
 
   #sudo iotop -tbod $interval > $1-iotop.out &
   netstat -s $interval > $1-netStat.out &
@@ -12,5 +13,8 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no stabilizer@${box
   sar -q $interval > $1-runQ.out &
   sar -n EDEV $interval > $1-errorNet.out &
   sar -n SOCK $interval > $1-sock.out &
-
+  sar -u $interval > $1-sar-cpu.out &
+  sar -r $interval > $1-sar-mem.out &
+  sar -B $interval > $1-sar-paging.out &
+  sar -W $interval > $1-sar-swapping.out &
 EOF

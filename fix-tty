@@ -1,0 +1,5 @@
+
+ip=$1
+user=$2
+
+nohup ssh -tt ${user}@${ip} sudo sed -i s/' requiretty'/'!requiretty'/g  /etc/sudoers &

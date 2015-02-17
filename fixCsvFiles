@@ -1,0 +1,7 @@
+find . -name *.csv | xargs -n1 sed -i s/' '/'-'/g
+find . -name *.csv | xargs -n1 sed -i s/','/', '/g
+find . -name *.csv | xargs -n1 sed -i s/'75%'/'lantency-percentile-75% '/g
+find . -name *.csv | xargs -n1 sed -i s/'95%'/'lantency-percentile-95% '/g
+find . -name *.csv | xargs -n1 sed -i s/'98%'/'lantency-percentile-98% '/g
+find . -name *.csv | xargs -n1 sed -i s/'99%'/'lantency-percentile-99% '/g
+find . -name *.csv | xargs -n1 sed -i s/'99.9%'/'lantency-percentile-99.9% '/g

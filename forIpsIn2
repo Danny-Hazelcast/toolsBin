@@ -5,7 +5,7 @@ f=$2
 while read line
 do
 	ip=$(echo $line | cut -d',' -f1)
-	${f} ${ip} "${@:3}" 
+	${f} ${ip} "${@:3}" &
 done < "${1:-/proc/${$}/fd/0}"
 
 

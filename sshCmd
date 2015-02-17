@@ -2,11 +2,13 @@
 
 ip=$1
 cmd=$2
-
+user=${3:-stabilizer}
 echo "$ip -> $cmd" 
 
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no stabilizer@${ip} <<EOF
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${user}@${ip} <<EOF
 
 $cmd
 
 EOF
+
+echo ""
