@@ -1,0 +1,60 @@
+
+profile=final
+duration=48h
+declare -a clusterProfileList=("test" "small" "medium" "large" "xlarge")
+
+boxCount=0
+members=0
+clients=0
+
+for clusterProfile in "${clusterProfileList[@]}" 
+do
+
+	case $clusterProfile in
+	    test)
+        	boxCount=2
+	        members=2
+        	clients=2
+        	;;
+
+	    small)
+	        boxCount=4
+	        members=4
+	        clients=8
+	        ;;
+
+	    medium)
+	        boxCount=6
+	        members=6
+	        clients=24
+	        ;;
+
+	    large)
+	        boxCount=10
+	        members=10
+	        clients=50
+	        ;;
+
+	    xlarge)
+	        boxCount=25
+	        members=25
+	        clients=100
+	        ;;
+
+	    *)
+	        echo "Unknown cluster size"
+	        exit 1
+	esac
+
+	mkdir -p ${profile}/${clusterProfile}
+
+	cp stabilizer.properties ${profile}/${clusterProfile}
+	cp test.properties ${profile}/${clusterProfile}
+	cp run.sh ${profile}/${clusterProfile}
+
+	sed -i s/'boxCount=$1'/boxCount=${boxCount}/g ${profile}/${clusterProfile}/run.sh
+	sed -i s/'members=$2'/members=${members}/g ${profile}/${clusterProfile}/run.sh
+	sed -i s/'clients=$3'/clients=${clients}/g ${profile}/${clusterProfile}/run.sh
+	sed -i s/'duration=$4'/duration=${duration}/g ${profile}/${clusterProfile}/run.sh
+	
+done
