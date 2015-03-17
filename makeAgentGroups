@@ -1,0 +1,14 @@
+args=( "$@" )
+
+start=1
+i=1
+for sz in "${args[@]}"; do
+
+   mkdir -p group${i}
+
+   end=$(($start+$sz-1))
+   sed -n ${start},${end}p agents.txt > group${i}/agents.txt
+   start=$(($start+$sz))
+
+   ((i++))
+done

@@ -1,0 +1,98 @@
+filePattern=$1
+title=$2
+
+	##  THE command      dstat -tciymn --socket --tcp -rsgd
+
+	#----system----     
+	#    1
+	#system-date-time
+
+	#----total-cpu-usage----
+	#    2                    3                     4                5                     6                  7
+	#total-cpu-usage-usr total-cpu-usage-sys total-cpu-usage-idl total-cpu-usage-wai total-cpu-usage-hiq total-cpu-usage-siq
+
+	#----interrupts---
+	#     8              9             10
+	#interrupts-33 interrupts-35 interrupts-36 
+
+	#---system--
+	#     11                        12
+	# system-interrupts   system-context-switches 
+
+	#------memory-usage-----
+	#13     14    15     16
+	#used  buff  cach  free
+
+	#-net/total-
+	#  17     18
+	# recv  send
+
+	# ------sockets------
+	# 19  29  21  22  23
+	# tot tcp udp raw frg
+
+	#----tcp-sockets----
+	# 24  25  26  27 28
+	#lis act syn tim clo
+	
+	#--io/total-
+	# 29    30
+	# read  writ
+
+	#----swap---
+	# 31    32
+ 	#used  free
+	
+	#---paging--
+	# 33   34
+	# in   out
+
+	#-dsk/total-
+	# 35    36
+	#read  writ
+
+plotAllDstatCsv ${filePattern} 2 ${title} total-cpu-usage-usr
+plotAllDstatCsv ${filePattern} 3 ${title} total-cpu-usage-sys
+plotAllDstatCsv ${filePattern} 4 ${title} total-cpu-usage-idl
+plotAllDstatCsv ${filePattern} 5 ${title} total-cpu-usage-wait
+plotAllDstatCsv ${filePattern} 6 ${title} total-cpu-usage-hardw-interrupt
+plotAllDstatCsv ${filePattern} 7 ${title} total-cpu-usage-softw-interrupt
+
+plotAllDstatCsv ${filePattern} 8 ${title} interrupts-33
+plotAllDstatCsv ${filePattern} 9 ${title} interrupts-35
+plotAllDstatCsv ${filePattern} 10 ${title} interrupts-35 interrupts-36
+
+plotAllDstatCsv ${filePattern} 11 ${title} system-interrupts
+plotAllDstatCsv ${filePattern} 12 ${title} system-context-switches
+
+plotAllDstatCsv ${filePattern} 13 ${title} memory-usage-used
+plotAllDstatCsv ${filePattern} 14 ${title} memory-usage-buff
+plotAllDstatCsv ${filePattern} 15 ${title} memory-usage-cach
+plotAllDstatCsv ${filePattern} 16 ${title} memory-usage-free
+
+plotAllDstatCsv ${filePattern} 17 ${title} net-total-recv
+plotAllDstatCsv ${filePattern} 18 ${title} net-total-send
+
+plotAllDstatCsv ${filePattern} 19 ${title} sockets-total
+plotAllDstatCsv ${filePattern} 20 ${title} sockets-tcp
+plotAllDstatCsv ${filePattern} 21 ${title} sockets-udp
+plotAllDstatCsv ${filePattern} 22 ${title} sockets-raw
+plotAllDstatCsv ${filePattern} 23 ${title} sockets-ip-fragments
+
+plotAllDstatCsv ${filePattern} 24 ${title} tcp-sockets-listen
+plotAllDstatCsv ${filePattern} 25 ${title} tcp-sockets-active
+plotAllDstatCsv ${filePattern} 26 ${title} tcp-sockets-syn
+plotAllDstatCsv ${filePattern} 27 ${title} tcp-sockets-time-wait
+plotAllDstatCsv ${filePattern} 28 ${title} tcp-sockets-close
+
+plotAllDstatCsv ${filePattern} 29 ${title} io-total-read
+plotAllDstatCsv ${filePattern} 30 ${title} io-total-writ
+
+plotAllDstatCsv ${filePattern} 31 ${title} swap-used
+plotAllDstatCsv ${filePattern} 32 ${title} swap-free
+
+plotAllDstatCsv ${filePattern} 33 ${title} paging-in
+plotAllDstatCsv ${filePattern} 34 ${title} paging-out
+
+plotAllDstatCsv ${filePattern} 35 ${title} disk-total-read
+plotAllDstatCsv ${filePattern} 36 ${title} disk-total-writ
