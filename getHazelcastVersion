@@ -1,0 +1,2 @@
+
+mvn -f "${HAZELCAST_HOME}/pom.xml" org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v '\['
