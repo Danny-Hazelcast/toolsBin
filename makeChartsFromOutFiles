@@ -80,4 +80,4 @@ zip charts.zip *.png
 rm -r tempCsvDump/
 rm *.png
 
-s3cp charts.zip s3://stabilizer/temp/
+s3cp charts.zip s3://simulator/temp/

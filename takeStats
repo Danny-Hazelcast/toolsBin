@@ -1,7 +1,7 @@
 
 box=$1
 interval=${2:-30}
-user=${3:-stabilizer}
+user=${3:-simulator}
 
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${user}@${box} << EOF
 

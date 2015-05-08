@@ -2,8 +2,8 @@
 
 ip=$1
 user=${2:-simulator}
-
 INF=eth0
+
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${user}@${ip} <<EOF
 
 echo "sudo /sbin/iptables -A INPUT -p tcp --dport 22 -m state --state NEW,ESTABLISHED -j ACCEPT
@@ -12,18 +12,6 @@ echo "sudo /sbin/iptables -A INPUT -p tcp --dport 22 -m state --state NEW,ESTABL
       sudo /sbin/iptables -A OUTPUT -p tcp --sport 9000 -m state --state ESTABLISHED -j ACCEPT
       sudo /sbin/iptables -A INPUT -p tcp --dport 9001 -m state --state NEW,ESTABLISHED -j ACCEPT
       sudo /sbin/iptables -A OUTPUT -p tcp --sport 9001 -m state --state ESTABLISHED -j ACCEPT
-      sudo /sbin/iptables -A INPUT -i $INF -j DROP
-      sudo /sbin/iptables -A OUTPUT -o $INF -j DROP" > block.sh;
+      sudo /sbin/iptables -A INPUT -i $INF -j REJECT
+      sudo /sbin/iptables -A OUTPUT -o $INF -j REJECT" > block.sh;
 chmod +x block.sh;
-
-sudo yum -y install sysstat;
-sudo yum -y install iotop;
-
-sudo sed -i s/"1024"/"64000"/g /etc/security/limits.d/90-nproc.conf;
-
-sudo su;
-echo "*  soft  core  unlimited" >> /etc/security/limits.conf;
-
-sudo reboot;
-
-EOF

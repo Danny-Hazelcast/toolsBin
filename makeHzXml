@@ -1,5 +1,5 @@
 
 membersXml=$(forPrivateIpsIn agents.txt echoMemberXml)
-cp $STABILIZER_HOME/conf/hazelcast.xml .
+cp $SIMULATOR_HOME/conf/hazelcast.xml .
 sed -i s/'<!--MEMBERS-->'/${membersXml}/g hazelcast.xml
  

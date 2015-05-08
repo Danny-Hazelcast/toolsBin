@@ -48,7 +48,7 @@ do
 
 	mkdir -p ${profile}/${clusterProfile}
 
-	cp stabilizer.properties ${profile}/${clusterProfile}
+	cp simulator.properties ${profile}/${clusterProfile}
 	cp test.properties ${profile}/${clusterProfile}
 	cp run.sh ${profile}/${clusterProfile}
 

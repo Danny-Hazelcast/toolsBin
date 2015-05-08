@@ -13,10 +13,10 @@ for sz in "${args[@]}"; do
    sed -n ${start},${end}p agents.txt > group${i}/agents.txt
    start=$(($start+$sz))
 
-   cp $STABILIZER_HOME/conf/hazelcast.xml group${i}/
+   cp $SIMULATOR_HOME/conf/hazelcast.xml group${i}/
    sed -i s/'<!--MEMBERS-->'/${membersXml}/g group${i}/hazelcast.xml
  
-   cp $STABILIZER_HOME/conf/client-hazelcast.xml group${i}/
+   cp $SIMULATOR_HOME/conf/client-hazelcast.xml group${i}/
    sed -i s/'<!--MEMBERS-->'/${addressXml}/g group${i}/client-hazelcast.xml
 
    cp runGroup.sh group${i}/

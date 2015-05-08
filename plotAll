@@ -32,4 +32,4 @@ EOF
 
 gnuplot $gnuplot_script
 
-s3cp plot.jpg s3://stabilizer/temp/plot.jpg
+s3cp plot.jpg s3://simulator/temp/plot.jpg

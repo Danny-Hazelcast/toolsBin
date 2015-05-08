@@ -1,5 +1,5 @@
 ip=$1
-user=${2:-stabilizer}
+user=${2:-simulator}
 
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${user}@${ip} << EOF
 

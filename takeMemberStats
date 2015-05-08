@@ -2,7 +2,7 @@
 box=$1
 interval=${2:-30}
 
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no stabilizer@${box} << EOF
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no simulator@${box} << EOF
 
   jps | grep Member.* | cut -d ' ' -f1 | xargs -L 1 -I% pidstat -p % $interval > member-$1-pidStatsOverView.out &
   jps | grep Member.* | cut -d ' ' -f1 | xargs -L 1 -I% pidstat -p % -r $interval > member-$1-pidStatsMem.out &

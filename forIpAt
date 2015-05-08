@@ -1,0 +1,7 @@
+pos=$1
+file=$2
+f=$3
+
+ip=$(sed -n ${pos}p < $file | cut -d',' -f1)
+
+${f} ${ip} "${@:4}"

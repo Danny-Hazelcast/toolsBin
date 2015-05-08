@@ -1,0 +1,1 @@
+forIpsIn agents.txt sshCmd 'sudo /sbin/iptables -F &'

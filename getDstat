@@ -1,5 +1,6 @@
 agentsfile=${1:-agents.txt}
 to=${2:-dstat}
-forIpsIn ${agentsfile} sshCmd "killall -9 python"
+
+forIpsIn ${agentsfile} sshCmd "killall -9 dstat"
 forIpsIn ${agentsfile} scpDown dstat.csv ${to}
 forIpsIn ${agentsfile} sshCmd "rm dstat.csv"

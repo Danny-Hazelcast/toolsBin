@@ -1,0 +1,3 @@
+patern=$1
+
+forIpsIn agents.txt sshCmd "find . -name worker.log | xargs grep '$patern' "
