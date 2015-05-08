@@ -1,0 +1,1 @@
+forIpsIn agents.txt sshCmd "jps | grep Member.* | cut -d ' ' -f1 | xargs -L1 -I% ./jHiccup-2.0.5-SNAPSHOT/jHiccup -p %"

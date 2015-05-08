@@ -1,0 +1,6 @@
+ip=$1
+
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no simulator@${ip} << EOF
+	jps | grep Member.* | cut -d ' ' -f1 | xargs -L 1 -I% jstack % >> $ip-serverJstack.out &
+	jps | grep Client.* | cut -d ' ' -f1 | xargs -L 1 -I% jstack % >> $ip-clientJstack.out &
+EOF

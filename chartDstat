@@ -1,5 +1,5 @@
-filePattern=$1
-title=$2
+filePattern=dstat.csv
+title=${1:-dstat}
 
 	##  THE command      dstat -tciymn --socket --tcp -rsgd
 

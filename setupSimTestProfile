@@ -1,46 +1,43 @@
 
-profile=final
-duration=48h
-declare -a clusterProfileList=("test" "small" "medium" "large" "xlarge")
+profile=${1:-final}
+duration=${2:-48h}
 
+version=$(mvn -f "${HAZELCAST_HOME}/pom.xml" org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v '\[')
+echo "version to test ${version}"
+
+declare -a clusterProfileList=("test" "small" "medium" "large" "xlarge")
 boxCount=0
 members=0
 clients=0
 
 for clusterProfile in "${clusterProfileList[@]}" 
 do
-
 	case $clusterProfile in
 	    test)
         	boxCount=2
 	        members=2
         	clients=2
         	;;
-
 	    small)
 	        boxCount=4
 	        members=4
 	        clients=8
 	        ;;
-
 	    medium)
 	        boxCount=6
 	        members=6
 	        clients=24
 	        ;;
-
 	    large)
 	        boxCount=10
 	        members=10
 	        clients=50
 	        ;;
-
 	    xlarge)
 	        boxCount=25
 	        members=25
 	        clients=100
 	        ;;
-
 	    *)
 	        echo "Unknown cluster size"
 	        exit 1
@@ -48,13 +45,13 @@ do
 
 	mkdir -p ${profile}/${clusterProfile}
 
-	cp stabilizer.properties ${profile}/${clusterProfile}
-	cp test.properties ${profile}/${clusterProfile}
-	cp run.sh ${profile}/${clusterProfile}
+	cp ${SIMULATOR_HOME}/stabilizer-tests/* ${profile}/${clusterProfile}/
+
+	cat ${profile}/${clusterProfile}/jcacheTest.properties >> ${profile}/${clusterProfile}/test.properties
 
 	sed -i s/'boxCount=$1'/boxCount=${boxCount}/g ${profile}/${clusterProfile}/run.sh
 	sed -i s/'members=$2'/members=${members}/g ${profile}/${clusterProfile}/run.sh
 	sed -i s/'clients=$3'/clients=${clients}/g ${profile}/${clusterProfile}/run.sh
 	sed -i s/'duration=$4'/duration=${duration}/g ${profile}/${clusterProfile}/run.sh
-	
+	sed -i s/'HAZELCAST_VERSION_SPEC=maven=???'/HAZELCAST_VERSION_SPEC=maven=${version}/g ${profile}/${clusterProfile}/simulator.properties
 done

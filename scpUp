@@ -2,7 +2,7 @@
 ip=$1
 from=$2
 to=$3
-user=${4:-stabilizer}
+user=${4:-simulator}
 
 scp $from ${user}@$ip:$to
 
