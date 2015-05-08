@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if ! git -C "${HAZELCAST_EE_HOME}" pull ; then
+  exit 1
+fi
+
+if ! mvn -f "${HAZELCAST_EE_HOME}/pom.xml" clean install -DskipTests ; then
+  exit 1
+fi
+
