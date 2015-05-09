@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 filePattern=dstat.csv
 title=${1:-dstat}
 
@@ -51,48 +53,48 @@ title=${1:-dstat}
 	# 35    36
 	#read  writ
 
-plotAllDstatCsv ${filePattern} 2 ${title} total-cpu-usage-usr
-plotAllDstatCsv ${filePattern} 3 ${title} total-cpu-usage-sys
-plotAllDstatCsv ${filePattern} 4 ${title} total-cpu-usage-idl
-plotAllDstatCsv ${filePattern} 5 ${title} total-cpu-usage-wait
-plotAllDstatCsv ${filePattern} 6 ${title} total-cpu-usage-hardw-interrupt
-plotAllDstatCsv ${filePattern} 7 ${title} total-cpu-usage-softw-interrupt
+plotDstatCsv ${filePattern} 2 ${title} total-cpu-usage-usr
+plotDstatCsv ${filePattern} 3 ${title} total-cpu-usage-sys
+plotDstatCsv ${filePattern} 4 ${title} total-cpu-usage-idl
+plotDstatCsv ${filePattern} 5 ${title} total-cpu-usage-wait
+plotDstatCsv ${filePattern} 6 ${title} total-cpu-usage-hardw-interrupt
+plotDstatCsv ${filePattern} 7 ${title} total-cpu-usage-softw-interrupt
 
-plotAllDstatCsv ${filePattern} 8 ${title} interrupts-33
-plotAllDstatCsv ${filePattern} 9 ${title} interrupts-35
-plotAllDstatCsv ${filePattern} 10 ${title} interrupts-35 interrupts-36
+plotDstatCsv ${filePattern} 8 ${title} interrupts-33
+plotDstatCsv ${filePattern} 9 ${title} interrupts-35
+plotDstatCsv ${filePattern} 10 ${title} interrupts-35 interrupts-36
 
-plotAllDstatCsv ${filePattern} 11 ${title} system-interrupts
-plotAllDstatCsv ${filePattern} 12 ${title} system-context-switches
+plotDstatCsv ${filePattern} 11 ${title} system-interrupts
+plotDstatCsv ${filePattern} 12 ${title} system-context-switches
 
-plotAllDstatCsv ${filePattern} 13 ${title} memory-usage-used
-plotAllDstatCsv ${filePattern} 14 ${title} memory-usage-buff
-plotAllDstatCsv ${filePattern} 15 ${title} memory-usage-cach
-plotAllDstatCsv ${filePattern} 16 ${title} memory-usage-free
+plotDstatCsv ${filePattern} 13 ${title} memory-usage-used
+plotDstatCsv ${filePattern} 14 ${title} memory-usage-buff
+plotDstatCsv ${filePattern} 15 ${title} memory-usage-cach
+plotDstatCsv ${filePattern} 16 ${title} memory-usage-free
 
-plotAllDstatCsv ${filePattern} 17 ${title} net-total-recv
-plotAllDstatCsv ${filePattern} 18 ${title} net-total-send
+plotDstatCsv ${filePattern} 17 ${title} net-total-recv
+plotDstatCsv ${filePattern} 18 ${title} net-total-send
 
-plotAllDstatCsv ${filePattern} 19 ${title} sockets-total
-plotAllDstatCsv ${filePattern} 20 ${title} sockets-tcp
-plotAllDstatCsv ${filePattern} 21 ${title} sockets-udp
-plotAllDstatCsv ${filePattern} 22 ${title} sockets-raw
-plotAllDstatCsv ${filePattern} 23 ${title} sockets-ip-fragments
+plotDstatCsv ${filePattern} 19 ${title} sockets-total
+plotDstatCsv ${filePattern} 20 ${title} sockets-tcp
+plotDstatCsv ${filePattern} 21 ${title} sockets-udp
+plotDstatCsv ${filePattern} 22 ${title} sockets-raw
+plotDstatCsv ${filePattern} 23 ${title} sockets-ip-fragments
 
-plotAllDstatCsv ${filePattern} 24 ${title} tcp-sockets-listen
-plotAllDstatCsv ${filePattern} 25 ${title} tcp-sockets-active
-plotAllDstatCsv ${filePattern} 26 ${title} tcp-sockets-syn
-plotAllDstatCsv ${filePattern} 27 ${title} tcp-sockets-time-wait
-plotAllDstatCsv ${filePattern} 28 ${title} tcp-sockets-close
+plotDstatCsv ${filePattern} 24 ${title} tcp-sockets-listen
+plotDstatCsv ${filePattern} 25 ${title} tcp-sockets-active
+plotDstatCsv ${filePattern} 26 ${title} tcp-sockets-syn
+plotDstatCsv ${filePattern} 27 ${title} tcp-sockets-time-wait
+plotDstatCsv ${filePattern} 28 ${title} tcp-sockets-close
 
-plotAllDstatCsv ${filePattern} 29 ${title} io-total-read
-plotAllDstatCsv ${filePattern} 30 ${title} io-total-writ
+plotDstatCsv ${filePattern} 29 ${title} io-total-read
+plotDstatCsv ${filePattern} 30 ${title} io-total-writ
 
-plotAllDstatCsv ${filePattern} 31 ${title} swap-used
-plotAllDstatCsv ${filePattern} 32 ${title} swap-free
+plotDstatCsv ${filePattern} 31 ${title} swap-used
+plotDstatCsv ${filePattern} 32 ${title} swap-free
 
-plotAllDstatCsv ${filePattern} 33 ${title} paging-in
-plotAllDstatCsv ${filePattern} 34 ${title} paging-out
+plotDstatCsv ${filePattern} 33 ${title} paging-in
+plotDstatCsv ${filePattern} 34 ${title} paging-out
 
-plotAllDstatCsv ${filePattern} 35 ${title} disk-total-read
-plotAllDstatCsv ${filePattern} 36 ${title} disk-total-writ
+plotDstatCsv ${filePattern} 35 ${title} disk-total-read
+plotDstatCsv ${filePattern} 36 ${title} disk-total-writ

@@ -16,6 +16,6 @@ while read -r line; do
 done <<< "$files"
 
 for f in "${fields[@]}"; do
-  plotAllHealth $f.txt $f value 
+  plotHealth $f.txt $f value
 done
 

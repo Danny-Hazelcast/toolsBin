@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 pos=$1
 file=$2
 f=$3
