@@ -1,15 +1,14 @@
 #!/bin/sh
 
-INF=eth0
+agentsfile=${1:-agents.txt}
 
-
-forIpsIn agents.txt sshCmd "
+forIpsIn ${agentsfile} sshCmd "
 echo `sudo /sbin/iptables -A INPUT -p tcp --dport 22 -m state --state NEW,ESTABLISHED -j ACCEPT
       sudo /sbin/iptables -A OUTPUT -p tcp --sport 22 -m state --state ESTABLISHED -j ACCEPT
       sudo /sbin/iptables -A INPUT -p tcp --dport 9000 -m state --state NEW,ESTABLISHED -j ACCEPT
       sudo /sbin/iptables -A OUTPUT -p tcp --sport 9000 -m state --state ESTABLISHED -j ACCEPT
       sudo /sbin/iptables -A INPUT -p tcp --dport 9001 -m state --state NEW,ESTABLISHED -j ACCEPT
       sudo /sbin/iptables -A OUTPUT -p tcp --sport 9001 -m state --state ESTABLISHED -j ACCEPT
-      sudo /sbin/iptables -A INPUT -i $INF -j DROP
-      sudo /sbin/iptables -A OUTPUT -o $INF -j DROP` > block.sh;
+      sudo /sbin/iptables -A INPUT -i $1 -j DROP
+      sudo /sbin/iptables -A OUTPUT -o $1 -j DROP` > block.sh;
 chmod +x block.sh;"

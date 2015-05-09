@@ -1,1 +1,0 @@
-forIpsIn agents.txt sshCmd 'sudo yum -y install dstat'

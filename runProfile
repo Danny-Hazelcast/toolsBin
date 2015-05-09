@@ -1,69 +1,57 @@
 #!/bin/bash
 
-duration=$1
-clusterSz=$2
+boxCount=2
+memberBox=0
+members=2
+clients=2
+duration=1h
+ee=false
+workingDir='workingHome'
 
-boxCount=0
-members=0
-workers=0
-
-case $clusterSz in
-    test)
-        boxCount=2
-        members=2
-        workers=2
-        ;;
-
-    small)
-        boxCount=4
-        members=4
-        workers=8
-        ;;
-
-    medium)
-        boxCount=6
-        members=6
-        workers=24
-        ;;
-
-    large)
-        boxCount=10
-        members=10
-        workers=50
-        ;;
-
-    xlarge)
-        boxCount=25
-        members=25
-        workers=100
-        ;;
-
-    *)
-        echo "Unknown cluster size"
-        exit 1
-esac
-
+OPTS=`getopt -o : --long  boxCount:,memberBox:,members:,clients:,duration:,ee: -n 'parse-options' -- "$@"`
+ 
+if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
+ 
+eval set -- "$OPTS"
+  
+while true; do
+  case "$1" in
+    --ee ) ee=true; shift ;;
+    --boxCount ) boxCount="$2"; shift 2 ;;
+    --memberBox ) memberBox="$2"; shift 2 ;; 
+    --members ) members="$2"; shift 2 ;;
+    --clients ) clients="$2"; shift 2 ;;
+    --duration ) duration="$2"; shift 2  ;;
+    -- ) shift; break ;;
+    * ) break ;;
+  esac
+done
+ 
 if ! update-hazelcast ; then
    exit 1
+fi
+
+if [ "$ee" == "true" ]; then 
+ if ! update-hazelcast-ee ; then
+   exit 1
+ fi
 fi
 
 if ! update-stabilizer ; then
    exit 1
 fi
 
-mkdir -p ${clusterSz}
+mkdir -p ${workingDir}
 
-cp $SIMULATOR_HOME/stabilizer-tests/*.properties ${clusterSz}
-cp ~/run.sh ${clusterSz}
-
-cat ${clusterSz}/jcacheTest.properties >> ${clusterSz}/test.properties
+cp $SIMULATOR_HOME/stabilizer-tests/*.properties ${workingDir}
+cp ~/run.sh ${workingDir}
 
 output="$(pwd)/archive/$(date '+%Y_%m_%d-%H_%M_%S')"
 
-cd ${clusterSz}
+cd ${workingDir}
 
 hzVersion=$(getHazelcastVersion)
 sed -i s/maven=.*/maven="${hzVersion}"/g simulator.properties
-./run.sh ${boxCount} ${members} ${workers} ${duration} ${output}
+./run.sh ${boxCount} ${memberBox} ${members} ${clients} ${duration} ${ee} ${output}
 
 exit $?

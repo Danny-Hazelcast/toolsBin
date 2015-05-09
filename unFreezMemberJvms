@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 ip=$1
 sshCmd ${ip} 'jps | grep Member | cut -d " " -f1 | xargs -L1 kill -CONT $1 &'

@@ -1,7 +1,10 @@
 ip=$1
+user=${2:-simulator}
 
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no simulator@${ip} << EOF
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${user}@${ip} << EOF
 
   jps | grep Member.* | cut -d ' ' -f1 | xargs -L 1 -I% jmap -dump:file=member-$1-heap.out %
 
 EOF
+
+scpDown ${ip} *heap.out heap

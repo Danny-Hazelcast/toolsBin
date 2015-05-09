@@ -1,7 +1,0 @@
-
-agentsFile=${1:-agents.txt}
-
-membersXml=$(forPrivateIpsIn ${agentsFile} echoAddressXml)
-cp $SIMULATOR_HOME/conf/client-hazelcast.xml .
-sed -i s/'<!--MEMBERS-->'/${membersXml}/g client-hazelcast.xml
- 

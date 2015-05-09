@@ -6,3 +6,5 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${user}@${ip} <<
   jps | grep Member.* | cut -d ' ' -f1 | xargs -L 1 -I%  jmap -histo % > member-$1-histo.out
 
 EOF
+
+scpDown ${ip} *histo.out histo
