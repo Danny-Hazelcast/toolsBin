@@ -1,6 +1,0 @@
-ip=$1
-user=${2:-stabilizer}
-
-scp ${user}@${ip}:~/*.out . 
-
-

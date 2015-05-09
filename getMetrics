@@ -1,3 +1,0 @@
-to=${1:-metric}
-forIpsIn agents.txt scpDown *Timer.csv ${to}
-forIpsIn agents.txt sshCmd "rm *Timer.csv"

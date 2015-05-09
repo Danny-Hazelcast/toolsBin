@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+agents=${1:-agents.txt}
+hzxml=${2:-client-hazelcast.xml}
+
+membersXml=$(forPrivateIpsIn ${agents} echoAddressXml)
+sed -i s/'<!--MEMBERS-->'/${membersXml}/g ${hzxml}

@@ -1,2 +1,3 @@
 agentsfile=${1:-agents.txt}
+
 forIpsIn ${agentsfile} sshCmd "dstat -tciymn --socket --tcp -rsgd --output dstat.csv > /dev/null &"

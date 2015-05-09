@@ -1,0 +1,3 @@
+agentsfile=${1:-agents.txt}
+
+forIpsIn ${agentsfile} sshCmd "jps | grep Member.* | cut -d ' ' -f1 | xargs -L1 -I% ./jHiccup-2.0.5-SNAPSHOT/jHiccup -p %"
