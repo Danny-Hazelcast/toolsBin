@@ -2,18 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5a2467ed-1c4c-4e74-93f5-5b9a0e732337" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/addDstat" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/chartHelthMonitor" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/initJHic" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/plotAllHealth" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/startJHic" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/takeJstack2" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/setupFinalTestProfile" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/addMembersXml" afterPath="$PROJECT_DIR$/addMembersXml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/chartDstat" afterPath="$PROJECT_DIR$/chartDstat" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/getDstat" afterPath="$PROJECT_DIR$/getDstat" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/setupSimTestProfile" afterPath="$PROJECT_DIR$/setupSimTestProfile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/takeJstack" afterPath="$PROJECT_DIR$/takeJstack" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/runProfile2" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/initBox" afterPath="$PROJECT_DIR$/initBox" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/makeBlockScript" afterPath="$PROJECT_DIR$/makeBlockScript" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/runProfile" afterPath="$PROJECT_DIR$/runProfile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="toolsBin1.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -38,26 +31,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="forIpsIn2" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/forIpsIn2">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="255">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="sshCmd" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/sshCmd">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="300">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="takeJstack" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/takeJstack">
           <provider selected="true" editor-type-id="text-editor">
@@ -78,11 +51,41 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="getDstat" pinned="false" current-in-tab="true">
+      <file leaf-file-name="getDstat" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/getDstat">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.15424165" vertical-offset="0" max-vertical-offset="778">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="210">
               <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="runProfile" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/runProfile">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.88431877" vertical-offset="332" max-vertical-offset="1110">
+              <caret line="68" column="7" selection-start-line="68" selection-start-column="7" selection-end-line="68" selection-end-column="7" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="makeBlockScript" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/makeBlockScript">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="345">
+              <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="runProfile2" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/runProfile2">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="945">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -128,16 +131,6 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="forIpsIn" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/forIpsIn">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="30" max-vertical-offset="255">
-              <caret line="2" column="5" selection-start-line="2" selection-start-column="5" selection-end-line="2" selection-end-column="5" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
     </leaf>
   </component>
   <component name="Git.Settings">
@@ -156,6 +149,8 @@
         <option value="$PROJECT_DIR$/takeJstack" />
         <option value="$PROJECT_DIR$/setupSimTestProfile" />
         <option value="$PROJECT_DIR$/getDstat" />
+        <option value="$PROJECT_DIR$/runProfile" />
+        <option value="$PROJECT_DIR$/makeBlockScript" />
       </list>
     </option>
   </component>
@@ -414,7 +409,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -431,7 +426,7 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24964234" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24964234" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -749,8 +744,32 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/getDstat">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.15424165" vertical-offset="0" max-vertical-offset="778">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="210">
           <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/runProfile2">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="945">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/makeBlockScript">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="345">
+          <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/runProfile">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.88431877" vertical-offset="332" max-vertical-offset="1110">
+          <caret line="68" column="7" selection-start-line="68" selection-start-column="7" selection-end-line="68" selection-end-column="7" />
           <folding />
         </state>
       </provider>

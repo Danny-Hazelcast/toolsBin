@@ -18,6 +18,7 @@ chmod +x block.sh;
 
 sudo yum -y install sysstat;
 sudo yum -y install iotop;
+sudo yum -y install dstat;
 
 sudo sed -i s/"1024"/"64000"/g /etc/security/limits.d/90-nproc.conf;
 
