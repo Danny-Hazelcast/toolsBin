@@ -1,0 +1,2 @@
+forIpsIn agents.txt scpUp ~/jHiccup-2.0.5-SNAPSHOT-dist.zip .
+forIpsIn agents.txt sshCmd 'unzip jHiccup-2.0.5-SNAPSHOT-dist.zip'

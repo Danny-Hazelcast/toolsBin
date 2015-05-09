@@ -1,3 +1,4 @@
+#!/bin/sh
 
 inFile=${1:-template-hazelcast.xml}
 membersXml=$(forPrivateIpsIn agents.txt echoMemberXml)
