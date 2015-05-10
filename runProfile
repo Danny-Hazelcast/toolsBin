@@ -6,7 +6,7 @@ members=2
 clients=2
 duration=1h
 ee=false
-workingDir='workingHome'
+workingDir="workingHome"
 
 OPTS=`getopt -o : --long  boxCount:,memberBox:,members:,clients:,duration:,ee: -n 'parse-options' -- "$@"`
  
@@ -16,7 +16,7 @@ eval set -- "$OPTS"
   
 while true; do
   case "$1" in
-    --ee ) ee=true; shift ;;
+    --ee ) ee="$2"; shift 2 ;;
     --boxCount ) boxCount="$2"; shift 2 ;;
     --memberBox ) memberBox="$2"; shift 2 ;; 
     --members ) members="$2"; shift 2 ;;

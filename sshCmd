@@ -3,7 +3,7 @@
 ip=$1
 cmd=$2
 user=${3:-simulator}
-echo "$ip -> $cmd" 
+echo "${user}@${ip} -> $cmd" 
 
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${user}@${ip} <<EOF
 
