@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 FILE_PATTERN=$1
 idx=$2
 title=$3

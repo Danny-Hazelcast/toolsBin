@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 agentsfile=${1:-agents.txt}
 to=${2:-dstat}
 

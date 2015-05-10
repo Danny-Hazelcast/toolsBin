@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 filePattern=$1
 title=$2

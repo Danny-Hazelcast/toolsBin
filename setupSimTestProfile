@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 profile=${1:-final}
 duration=${2:-48h}
