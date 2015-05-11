@@ -26,6 +26,10 @@ while true; do
     * ) break ;;
   esac
 done
+
+if ! update-stabilizer ; then
+   exit 1
+fi
  
 if ! update-hazelcast ; then
    exit 1
@@ -36,11 +40,7 @@ if [ "$ee" == "true" ]; then
    exit 1
  fi
  sed -i s/'<!--license-key-->'/"${HAZELCAST_EE_KEY}"/g $SIMULATOR_HOME/conf/hazelcast.xml
- sed -i s/'<!--license-key-->'/"${HAZELCAST_EE_KEY}"/g $SIMULATOR_HOME/conf/hazelcast.xml
-fi
-
-if ! update-stabilizer ; then
-   exit 1
+ sed -i s/'<!--license-key-->'/"${HAZELCAST_EE_KEY}"/g $SIMULATOR_HOME/conf/client-hazelcast.xml
 fi
 
 mkdir -p ${workingDir}
