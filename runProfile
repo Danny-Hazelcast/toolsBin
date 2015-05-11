@@ -35,6 +35,8 @@ if [ "$ee" == "true" ]; then
  if ! update-hazelcast-ee ; then
    exit 1
  fi
+ sed -i s/'<!--license-key-->'/"${HAZELCAST_EE_KEY}"/g $SIMULATOR_HOME/conf/hazelcast.xml
+ sed -i s/'<!--license-key-->'/"${HAZELCAST_EE_KEY}"/g $SIMULATOR_HOME/conf/hazelcast.xml
 fi
 
 if ! update-stabilizer ; then
