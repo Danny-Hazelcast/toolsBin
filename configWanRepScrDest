@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+src=$1
+targ=$2
+repImplClass=${3:-com.hazelcast.enterprise.wan.replication.WanNoDelayReplication}
+
+srcXml="group${src}/hazelcast.xml"
+targXml="group${targ}/hazelcast.xml"
+
+nameSpace="http://www.hazelcast.com/schema/config"
+rootXpath="/x:hazelcast"
+wanXpath="$rootXpath/x:wan-replication"
+groupNameXpath="${rootXpath}/x:group/x:name"
+
+snapshotBool="true"
+
+wanRepCount=$(xmlstarlet sel -N x="${nameSpace}" -t -v  "count(${wanXpath})" ${srcXml})
+
+if (($wanRepCount == 0)) ; then
+  xmlstarlet ed -L -N x="${nameSpace}"\
+             -s "${rootXpath}" -t elem -n wan-replication -v "" \
+             -i "${rootXpath}/wan-replication" -t attr -n name -v "wanReplication" ${srcXml}             
+fi
+
+targetGroupName=group${targ}
+sourceGroupName=group${src}
+endPointsXml=$(forPrivateIpsIn group${targ}/agents.txt echoAddressXml)
+
+xmlstarlet ed -L -N x="${nameSpace}" -u "${groupNameXpath}" -v ${targetGroupName} ${targXml}
+xmlstarlet ed -L -N x="${nameSpace}" -u "${groupNameXpath}" -v ${sourceGroupName} ${srcXml}
+
+xmlstarlet ed -L -N x="${nameSpace}"\
+  -s "${wanXpath}" -t elem -n target-cluster -v "" \
+  -i "${wanXpath}/target-cluster" -t attr -n group-name -v "${targetGroupName}" \
+  -i "${wanXpath}/target-cluster" -t attr -n group-password -v "pass" \
+  -s "${wanXpath}/target-cluster" -t elem -n replication-impl -v "${repImplClass}" \
+  -s "${wanXpath}/target-cluster" -t elem -n end-points -v "ENDPOINTS" \
+  ${srcXml}
+
+endPointsXml=$(forPrivateIpsIn group${targ}/agents.txt echoAddressXml)
+sed -i s/'ENDPOINTS'/${endPointsXml}/g group${src}/hazelcast.xml

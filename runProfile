@@ -7,9 +7,9 @@ clients=2
 duration=1h
 ee=false
 machienSpec=""
-workingDir="workingHome"
+testDir=""
 
-OPTS=`getopt -o : --long  boxCount:,memberBox:,members:,clients:,duration:,ee:,machienSpec: -n 'parse-options' -- "$@"`
+OPTS=`getopt -o : --long  boxCount:,memberBox:,members:,clients:,duration:,ee:,machienSpec:,testDir: -n 'parse-options' -- "$@"`
  
 if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
  
@@ -24,6 +24,7 @@ while true; do
     --clients ) clients="$2"; shift 2 ;;
     --duration ) duration="$2"; shift 2  ;;
     --machienSpec ) machienSpec="$2"; shift 2  ;;
+    --testDir ) testDir="$2"; shift 2  ;;
     -- ) shift; break ;;
     * ) break ;;
   esac
@@ -45,14 +46,21 @@ if [ "$ee" == "true" ]; then
  sed -i s/'<!--license-key-->'/"${HAZELCAST_EE_KEY}"/g $SIMULATOR_HOME/conf/client-hazelcast.xml
 fi
 
-mkdir -p ${workingDir}
-
-cp $SIMULATOR_HOME/stabilizer-tests/*.properties ${workingDir}
-cp ~/run.sh ${workingDir}
+if ! update-eeTests ; then
+   exit 1
+fi
 
 output="$(pwd)/archive/$(date '+%Y_%m_%d-%H_%M_%S')"
+#output="$(pwd)/test"
+mkdir -p ${output}
+cd ${output}
 
-cd ${workingDir}
+cp $SIMULATOR_HOME/stabilizer-tests/*.properties .
+cp ~/run .
+
+if [ -n "${testDir}" ]; then
+  cp -fr $SIM_EE_TEST_DIR/${testDir}/. .
+fi
 
 hzVersion=$(getHazelcastVersion)
 sed -i s/maven=.*/maven="${hzVersion}"/ simulator.properties
@@ -61,6 +69,32 @@ if [ -n "${machienSpec}" ]; then
   sed -i "s|MACHINE_SPEC=.*|MACHINE_SPEC=${machienSpec}|" simulator.properties
 fi
 
-./run.sh ${boxCount} ${memberBox} ${members} ${clients} ${duration} ${ee} ${output}
+if ! provisioner --scale ${boxCount} ; then
+  exit 1
+fi
 
-exit $?
+startDstat > /dev/null 2>&1
+
+./run ${boxCount} ${memberBox} ${members} ${clients} ${duration} ${ee}
+returnCode=$?
+
+getDstat > /dev/null 2>&1
+
+forIpsIn agents.txt sshCmd 'netstat -i' > allBox_netstat-i.txt
+forIpsIn agents.txt sshCmd 'ifconfig eth0' > allBox_ifConfig_eth0.txt
+forIpsIn agents.txt sshCmd 'netstat -s' > allBox_netstat-s.txt
+forIpsIn agents.txt sshCmd 'sudo cat /var/log/messages*' > allBox_logMsg.txt
+
+provisioner --terminate
+
+hprof=$(find . -name *.hprof)
+hs_err=$(find . -name hs_err_pid*)
+failures=$(find . -name failures*)
+
+if [ -n "${hprof}"  ] || [ -n "${hs_err}"  ] || [ -n "${failures}"  ] ; then
+  printf "\nFAIL!\n${hprof}\n${hs_err}\n${failures}\n"
+  ((returnCode++))
+fi
+pwd
+exit $returnCode
+
