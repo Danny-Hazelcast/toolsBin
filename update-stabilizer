@@ -12,6 +12,7 @@ version=$(mvn -f "${SIMULATOR_ROOT}/pom.xml" org.apache.maven.plugins:maven-help
 
 rm -fr $SIMULATOR_HOME
 unzip  -q ~/hazelcast-simulator/dist/target/hazelcast-simulator-${version}-dist.zip -d $HOME
+mv ${SIMULATOR_ROOT}-${version} ${SIMULATOR_HOME}
 
 sed -i s/SIMULATOR_VERSION=.*/SIMULATOR_VERSION=${version}/g ~/.bashrc
 source ~/.bashrc
