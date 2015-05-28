@@ -1,0 +1,2 @@
+find . -name *hlog | xargs -n1 -I% sh -c 'd="$(dirname %)"; f="$(basename %)"; jHiccupLogProcessor -i % -o $d/jhic; cat $d/jhic | awk "{print \$1, \$6}" > $d/jhic-max.txt'
+find . -name *hlog.c | xargs -n1 -I% sh -c 'd="$(dirname %)"; f="$(basename %)"; jHiccupLogProcessor -i % -o $d/jhicControl; cat $d/jhicControl | awk "{print \$1, \$6}" > $d/jhicControl-max.txt'

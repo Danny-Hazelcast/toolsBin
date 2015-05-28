@@ -4,8 +4,10 @@ declare -a fields=("processors=" "physical.memory.total=" "physical.memory.free=
 
 files=$(find . -name worker.log | grep server)
 
+
 timeStr="[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9],[0-9][0-9][0-9]"
 
+currentDir=$(pwd)
 while read -r line; do
   dir=$(dirname $line)
   cd $dir
@@ -14,7 +16,7 @@ while read -r line; do
     grep Health worker.log | grep -P -oh $f.*?,\|"$timeStr" | sed 's/,$//' | sed 's/,/./g' | awk '/2015.*$/ {printf("%s, ", $0); next}1' | sed s/$f// > $f.txt
 
     done
-  cd ..
+  cd ${currentDir}
 done <<< "$files"
 
 for f in "${fields[@]}"; do
