@@ -61,7 +61,7 @@ fi
 mkdir -p ${output}
 cd ${output}
 
-cp $SIMULATOR_HOME/stabilizer-tests/*.properties .
+cp $SIMULATOR_HOME/simulator-tests/*.properties .
 cp ~/run .
 
 if [ -n "${testDir}" ]; then
