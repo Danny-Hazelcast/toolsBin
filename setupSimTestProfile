@@ -46,7 +46,7 @@ do
 
 	mkdir -p ${profile}/${clusterProfile}
 
-	cp ${SIMULATOR_HOME}/simulator-tests/* ${profile}/${clusterProfile}/
+	cp ${SIMULATOR_ROOT_HOME}/simulator-tests/* ${profile}/${clusterProfile}/
 
 	sed -i s/'boxCount=$1'/boxCount=${boxCount}/g ${profile}/${clusterProfile}/run.sh
 	sed -i s/'members=$2'/members=${members}/g ${profile}/${clusterProfile}/run.sh
