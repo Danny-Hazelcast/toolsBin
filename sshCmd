@@ -2,10 +2,10 @@
 
 ip=$1
 cmd=$2
-user=${3:-simulator}
+user=${3:-$(whoami)}
 echo "${user}@${ip} -> $cmd" 
 
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${user}@${ip} <<EOF
+ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${user}@${ip} <<EOF
 
 $cmd
 
