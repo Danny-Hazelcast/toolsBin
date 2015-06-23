@@ -8,9 +8,9 @@ if ! mvn -f "${SIM_EE_TEST_HOME}/pom.xml" -U clean install -DskipTests ; then
 	exit 1
 fi 
 
-cp $SIM_EE_TEST_HOME/ee-tests/target/*.jar  $SIMULATOR_ROOT_HOME/user-lib/
+cp $SIM_EE_TEST_HOME/ee-tests/target/*.jar  $SIMULATOR_HOME/user-lib/
 
-find . -name metrics-core-3.1.0.jar | xargs -I% cp % $SIMULATOR_ROOT_HOME/user-lib
-find . -name slf4j-api-1.7.9.jar | xargs -I% cp % $SIMULATOR_ROOT_HOME/user-lib
-find . -name slf4j-simple-1.7.9.jar | xargs -I% cp % $SIMULATOR_ROOT_HOME/user-lib
+find . -name metrics-core-3.1.0.jar | xargs -I% cp % $SIMULATOR_HOME/user-lib
+find . -name slf4j-api-1.7.9.jar | xargs -I% cp % $SIMULATOR_HOME/user-lib
+find . -name slf4j-simple-1.7.9.jar | xargs -I% cp % $SIMULATOR_HOME/user-lib
 

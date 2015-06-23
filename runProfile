@@ -44,8 +44,8 @@ if [ "$ee" == "true" ]; then
  if ! update-hazelcast-ee ; then
    exit 1
  fi
- sed -i s/'<!--license-key-->'/"${HAZELCAST_EE_KEY}"/g $SIMULATOR_ROOT_HOME/conf/hazelcast.xml
- sed -i s/'<!--license-key-->'/"${HAZELCAST_EE_KEY}"/g $SIMULATOR_ROOT_HOME/conf/client-hazelcast.xml
+ sed -i s/'<!--license-key-->'/"${HAZELCAST_EE_KEY}"/g $SIMULATOR_HOME/conf/hazelcast.xml
+ sed -i s/'<!--license-key-->'/"${HAZELCAST_EE_KEY}"/g $SIMULATOR_HOME/conf/client-hazelcast.xml
 fi
 
 if ! update-eeTests ; then
@@ -61,7 +61,7 @@ fi
 mkdir -p ${output}
 cd ${output}
 
-cp $SIMULATOR_ROOT_HOME/simulator-tests/*.properties .
+cp $SIMULATOR_HOME/simulator-tests/*.properties .
 cp ~/run .
 
 if [ -n "${testDir}" ]; then
