@@ -3,4 +3,4 @@ cmd=$1
 user=${2:-$(whoami)}
 file=${3:-agents.txt}
 
-sshAll "${cmd}" "${user}"
+forIpsIn "${file}" sshCmd "${cmd}" "${user}"
