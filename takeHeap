@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
 ip=$1
-user=${2:-simulator}
+jvmType=${2:-Client}
+user=${3:-simulator}
+
 
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${user}@${ip} << EOF
 
-  jps | grep Member.* | cut -d ' ' -f1 | xargs -L 1 -I% jmap -dump:file=member-$1-heap.out %
+  jps | grep ${jvmType}.* | cut -d ' ' -f1 | xargs -L 1 -I% jmap -dump:live,format=b,file=${jvmType}-$1-$(date '+%Y_%m_%d-%H_%M_%S').hprof %
 
 EOF
 
-scpDown ${ip} *heap.out heap
+#scpDown ${ip} *heap.out heap
