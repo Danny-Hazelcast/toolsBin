@@ -3,7 +3,7 @@
 ip=$1
 from=$2
 to=$3
-user=${4:-simulator}
+user=${4:- $(whoami)}
 
 mkdir -p ${to}/${ip}/
 scp ${user}@$ip:$from ${to}/${ip}/

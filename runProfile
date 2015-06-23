@@ -86,10 +86,10 @@ returnCode=$?
 
 getDstat > /dev/null 2>&1
 
-forIpsIn agents.txt sshCmd 'netstat -i' > allBox_netstat-i.txt
-forIpsIn agents.txt sshCmd 'ifconfig eth0' > allBox_ifConfig_eth0.txt
-forIpsIn agents.txt sshCmd 'netstat -s' > allBox_netstat-s.txt
-forIpsIn agents.txt sshCmd 'sudo cat /var/log/messages*' > allBox_logMsg.txt
+sshAll 'netstat -i' > allBox_netstat-i.txt
+sshAll 'ifconfig eth0' > allBox_ifConfig_eth0.txt
+sshAll 'netstat -s' > allBox_netstat-s.txt
+sshAll 'sudo cat /var/log/messages*' > allBox_logMsg.txt
 
 if [ "$reuse" != "true" ]; then
  provisioner --terminate
