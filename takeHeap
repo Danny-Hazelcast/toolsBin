@@ -2,7 +2,7 @@
 
 ip=$1
 jvmType=${2:-Client}
-user=${3:-simulator}
+user=${3:-$(whoami)}
 
 
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${user}@${ip} << EOF
