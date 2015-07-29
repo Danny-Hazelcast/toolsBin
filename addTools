@@ -3,4 +3,4 @@ forIpsIn agents.txt sshCmd 'sudo yum install -y dstat'
 forIpsIn agents.txt sshCmd 'wget http://www.azulsystems.com/products/jhiccup/download_zip'
 forIpsIn agents.txt sshCmd 'unzip download_zip'
 
-forIpsIn agents.txt sshCmd 'echo export _JAVA_OPTIONS='"\'"'-javaagent:${HOME}/jHiccup-2.0.2/jHiccup.jar=\"-d 8000 -i 1000 -c\"'"\'"' >> .bashrc'
+forIpsIn agents.txt sshCmd 'echo export _JAVA_OPTIONS='"\'"'-javaagent:${HOME}/jHiccup-2.0.2/jHiccup.jar=\"-d 8000 -i 1000\"'"\'"' >> .bashrc'

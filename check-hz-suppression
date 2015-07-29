@@ -1,0 +1,2 @@
+java -jar /disk1/jenkins/CheckSuppression/target/Sepressions-1.0-SNAPSHOT.jar $HAZELCAST_HOME/checkstyle/suppressions.xml > /var/www/html/hz-checkstyle.txt
+java -jar /disk1/jenkins/CheckSuppression/target/Sepressions-1.0-SNAPSHOT.jar $HAZELCAST_EE_HOME/checkstyle/suppressions.xml > /var/www/html/hz-ee-checkstyle.txt

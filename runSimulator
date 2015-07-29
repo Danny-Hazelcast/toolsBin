@@ -1,5 +1,21 @@
 #!/bin/bash
 
+cleanup() {
+    exitCode=$?
+ 
+    #provisioner --terminate
+
+    if (( $exitCode != 0 )) ; then 
+      hear=$(pwd)	
+      hear=$( echo "${hear}" | grep -oh workspace.*)
+      slackPost simulator-fail FAIL \<http://54.87.52.100/~jenkins/${hear}\> exit code !=0
+    fi
+
+    exit $rv
+}
+
+trap "cleanup" INT TERM EXIT
+
 boxCount=2
 memberBox=0
 members=2
@@ -8,8 +24,9 @@ duration=1h
 ee=false
 machienSpec=""
 testDir=""
+hzBranch=""
 
-OPTS=`getopt -o : --long  boxCount:,memberBox:,members:,clients:,duration:,ee:,machienSpec:,testDir: -n 'parse-options' -- "$@"` 
+OPTS=`getopt -o : --long  boxCount:,memberBox:,members:,clients:,duration:,ee:,machienSpec:,testDir:,hzBranch: -n 'parse-options' -- "$@"` 
 if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
 
 initCmdArgs () { 
@@ -25,7 +42,7 @@ initCmdArgs () {
     --duration ) duration="$2"; shift 2  ;;
     --machienSpec ) machienSpec="$2"; shift 2  ;;
     --testDir ) testDir="$2"; shift 2  ;;
-    --reuse ) reuse="$2"; shift 2  ;;
+    --hzBranch ) hzBranch="$2"; shift 2  ;;
     -- ) shift; break ;;
     * ) break ;;
   esac
@@ -37,8 +54,13 @@ updateRepos () {
    exit 1
  fi
  
- if ! update-hazelcast ; then
-   exit 1
+ if [ "$hzBranch" == "" ]; then
+   if ! update-hazelcast ; then
+     exit 1
+   fi
+ else
+   update-hazelcast "${hzBranch}"
+   getHazelcastVersion
  fi
 
  if [ "$ee" == "true" ]; then 
@@ -99,23 +121,27 @@ lookForErrors () {
  fi
 }
 
-output="$(pwd)/archive2/$(date '+%Y_%m_%d-%H_%M_%S')"
-mkdir -p ${output}
-cp agents.txt ${output}
-cd ${output}
+setDirStruct () {
+ output="$(pwd)/$(getHazelcastVersion)/$(date '+%Y_%m_%d-%H_%M_%S')"
+ mkdir -p ${output}
+ cp agents.txt ${output} 2>/dev/null
+ cd ${output}
+}
 
-initCmdArgs
-updateRepos
-setSimulatorProps
-provisionBoxes
+mainFunction () {
+ initCmdArgs
+ updateRepos
+ setSimulatorProps
+ provisionBoxes
 
-./run ${boxCount} ${memberBox} ${members} ${clients} ${duration}
-returnCode=$?
+ ./run ${boxCount} ${memberBox} ${members} ${clients} ${duration}
+ returnCode=$?
 
-saveOppSysMsgs
+ saveOppSysMsgs
+ lookForErrors
 
-provisioner --terminate
+ exit $returnCode
+}
 
-lookForErrors
-
-exit $returnCode
+setDirStruct
+mainFunction 2>&1 | tee run.log

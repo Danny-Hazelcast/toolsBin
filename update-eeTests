@@ -1,15 +1,30 @@
 #!/bin/sh
 
-if ! git -C "${SIM_EE_TEST_HOME}" pull; then
-	exit 1
+
+moveJars () {
+
+ cp $SIM_EE_TEST_HOME/ee-tests/target/*.jar  $SIMULATOR_HOME/user-lib/
+
+ find ~ -name metrics-core-3.1.0.jar | xargs -I% cp % $SIMULATOR_HOME/user-lib
+ find ~ -name slf4j-api-1.7.9.jar | xargs -I% cp % $SIMULATOR_HOME/user-lib
+ find ~ -name slf4j-simple-1.7.9.jar | xargs -I% cp % $SIMULATOR_HOME/user-lib
+
+}
+
+
+res=$(git -C "${SIM_EE_TEST_HOME}" pull)
+
+echo "simulator ee test $res"
+
+if [ "$res" == "Already up-to-date." ] ; then
+  moveJars
+  exit 0
 fi
+
 
 if ! mvn -f "${SIM_EE_TEST_HOME}/pom.xml" -U clean install -DskipTests ; then
 	exit 1
 fi 
 
-cp $SIM_EE_TEST_HOME/ee-tests/target/*.jar  $SIMULATOR_HOME/user-lib/
-
-
-
+moveJars
 

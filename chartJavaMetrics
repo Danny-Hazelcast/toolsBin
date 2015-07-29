@@ -28,7 +28,7 @@ plotMetrics ${filePattern} 4 ${title} mean-latency
 plotMetrics ${filePattern} 6 ${title} stdDev-latency
 
 plotMetrics ${filePattern} 8 ${title} 75-latency-percentile
-plotMetrics ${filePattern} 9 ${title} 95-latency-percentTile
-plotMetrics ${filePattern} 10 ${title} 98-latency-percentTile
-plotMetrics ${filePattern} 11 ${title} 99-latency-percentTile
-plotMetrics ${filePattern} 12 ${title} 999-latency-percentTile
+plotMetrics ${filePattern} 9 ${title} 95-latency-percentile
+plotMetrics ${filePattern} 10 ${title} 98-latency-percentile
+plotMetrics ${filePattern} 11 ${title} 99-latency-percentile
+plotMetrics ${filePattern} 12 ${title} 999-latency-percentile

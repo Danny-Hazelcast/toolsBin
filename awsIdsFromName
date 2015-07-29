@@ -1,0 +1,2 @@
+value=${1:-danny}
+aws ec2 describe-instances --output text --filter Name=tag:Name,Values="${value}" --query 'Reservations[*].Instances[*].[InstanceId]'

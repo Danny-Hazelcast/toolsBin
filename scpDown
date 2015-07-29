@@ -6,5 +6,5 @@ to=$3
 user=${4:-simulator}
 
 mkdir -p ${to}/${ip}/
-scp ${user}@$ip:$from ${to}/${ip}/
+scp -r ${user}@$ip:$from ${to}/${ip}/
 

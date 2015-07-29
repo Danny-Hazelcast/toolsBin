@@ -1,8 +1,14 @@
 #!/bin/sh
 
-if ! git -C "${HAZELCAST_EE_HOME}" pull ; then
-  exit 1
-fi
+update-hazelcast
+
+res=$(git -C "${HAZELCAST_EE_HOME}" pull)
+
+echo "hazelcast Enterprise $res"
+
+#if [ "$res" == "Already up-to-date." ] ; then
+#  exit 0
+#fi
 
 if ! mvn -f "${HAZELCAST_EE_HOME}/pom.xml" clean install -DskipTests ; then
   exit 1

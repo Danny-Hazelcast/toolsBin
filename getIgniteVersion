@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+mvn -f "${IGNITE_HOME}/pom.xml" org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v '\['

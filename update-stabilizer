@@ -1,8 +1,14 @@
 #!/bin/sh
 
-if ! git -C "${SIMULATOR_ROOT}" pull; then
-	exit 1
+res=$(git -C "${SIMULATOR_ROOT}" pull)
+
+echo "simulator $res"
+
+if [ "$res" == "Already up-to-date." ] ; then
+  exit 0
 fi
+
+
 
 if ! mvn -f "${SIMULATOR_ROOT}/pom.xml" -U clean install -DskipTests ; then
 	exit 1

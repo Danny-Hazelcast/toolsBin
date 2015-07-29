@@ -1,0 +1,146 @@
+#!/bin/bash
+
+servers=3
+drivers=1
+machienSpec=""
+subnet=""
+serverIps=""
+driverIps=""
+
+OPTS=`getopt -o : --long  servers:,drivers:,subnet:,machienSpec: -n 'parse-options' -- "$@"`
+if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
+
+initCmdArgs () { 
+ eval set -- "$OPTS"
+
+ while true; do
+  case "$1" in
+    --servers ) servers="$2"; shift 2 ;;
+    --drivers ) drivers="$2"; shift 2 ;;
+    --subnet ) subnet="$2"; shift 2 ;;
+    --machienSpec ) machienSpec="$2";  shift 2 ;;
+    * ) break ;;
+  esac
+ done
+}
+
+initBoxes () {
+ sshAll 'wget http://mirrors.gigenet.com/apache/maven/maven-3/3.0.5/binaries/apache-maven-3.0.5-bin.tar.gz' ec2-user
+ sshAll 'tar -zxvf apache-maven-3.0.5-bin.tar.gz' ec2-user
+
+ sshAll 'sudo yum install -y git' ec2-user
+ sshAll 'git clone https://github.com/Danny-Hazelcast/yardstick-hazelcast.git' ec2-user
+ sshAll 'git clone https://github.com/Danny-Hazelcast/yardstick-ignite.git' ec2-user
+
+ forIpsIn agents.txt scpUp ~/temp-config/.bashrc . ec2-user
+
+ sshAll 'cd yardstick-hazelcast; git checkout parity; git pull; mvn clean install -DskipTests' ec2-user
+ sshAll 'cd yardstick-ignite; git checkout parity; git pull; mvn clean install -DskipTests' ec2-user
+
+ forIpsIn agents.txt scpUp ~/.ssh/jenkins-ec2.pem .ssh/ ec2-user
+ sshAll 'chmod 600 ~/.ssh/jenkins-ec2.pem' ec2-user
+ forIpsIn agents.txt scpUp ~/.ssh/config .ssh/ ec2-user
+ sshAll 'chmod 600 ~/.ssh/config' ec2-user
+} 
+
+setLatestIgnite () { 
+ update-ignite
+ version=$(getIgniteVersion)
+
+ sshAll 'rm yardstick-ignite/libs/ignite-aws*' ec2-user
+ sshAll	'rm yardstick-ignite/libs/ignite-core*' ec2-user
+ sshAll	'rm yardstick-ignite/libs/ignite-indexing*' ec2-user
+ sshAll	'rm yardstick-ignite/libs/ignite-spring*' ec2-user
+
+ forIpsIn agents.txt scpUp $(find ~/.m2 -name ignite-aws-${version}.jar) yardstick-ignite/libs ec2-user
+ forIpsIn agents.txt scpUp $(find ~/.m2 -name ignite-core-${version}.jar) yardstick-ignite/libs ec2-user
+ forIpsIn agents.txt scpUp $(find ~/.m2 -name ignite-indexing-${version}.jar) yardstick-ignite/libs ec2-user
+ forIpsIn agents.txt scpUp $(find ~/.m2 -name ignite-spring-${version}.jar) yardstick-ignite/libs ec2-user
+}
+
+setLatestHazelcast () {
+ update-hazelcast
+ version=$(getHazelcastVersion)
+ 
+ sshAll 'rm yardstick-hazelcast/libs/hazelcast-*.jar' ec2-user
+
+ forIpsIn agents.txt scpUp $(find ~/.m2 -name hazelcast-${version}.jar) yardstick-hazelcast/libs ec2-user
+ forIpsIn agents.txt scpUp $(find ~/.m2 -name hazelcast-all-${version}.jar) yardstick-hazelcast/libs ec2-user
+ forIpsIn agents.txt scpUp $(find ~/.m2 -name hazelcast-client-${version}.jar) yardstick-hazelcast/libs ec2-user
+ forIpsIn agents.txt scpUp $(find ~/.m2 -name hazelcast-code-generator-${version}.jar) yardstick-hazelcast/libs ec2-user
+}
+
+initSimulatorProperties () {
+ cp ~/configuration/simulator.properties .
+ if [ -n "${machienSpec}" ]; then
+  sed -i "s|MACHINE_SPEC=.*|MACHINE_SPEC=${machienSpec}|" simulator.properties
+ fi  
+}
+
+setBenchMarkProps () {
+ localRepo=$1
+ remoteRepo=$2
+ sed -i "s/SERVER_HOSTS=.*/SERVER_HOSTS=${serverIps}/" ${localRepo}/config/benchmark-ec2.properties
+ sed -i "s/DRIVER_HOSTS=.*/DRIVER_HOSTS=${driverIps}/" ${localRepo}/config/benchmark-ec2.properties
+ sed -i 's/REMOTE_USER=.*/REMOTE_USER=ec2-user/' ${localRepo}/config/benchmark-ec2.properties
+
+ forIpsIn agents.txt scpUp ${localRepo}/config/benchmark-ec2.properties ${remoteRepo}/config/ ec2-user
+} 
+
+collectResults () {
+ remoteRepo=$1
+ forIpsIn agents.txt scpDown ${remoteRepo}/logs-\* yard-log ec2-user
+ sshAll "rm -r ${remoteRepo}/logs-*" ec2-user
+
+ forIpsIn agents.txt scpDown ${remoteRepo}/bin/results-\* yard-res ec2-user
+ sshAll "rm -r ${remoteRepo}/bin/results-*" ec2-user
+}
+
+runYardstickHz () {
+ setBenchMarkProps ${YARD_HZ} yardstick-hazelcast
+
+ cp ~/configuration/hazelcast-ec2.xml .
+ initHzMembersXml agents.txt hazelcast-ec2.xml
+ forIpsIn agents.txt scpUp hazelcast-ec2.xml yardstick-hazelcast/config/ ec2-user
+ forIpAt 1 agents.txt sshCmd 'cd  yardstick-hazelcast/bin; ./benchmark-run-all.sh ../config/benchmark-ec2.properties' ec2-user
+
+ collectResults yardstick-hazelcast
+}
+
+runYardstickIg () {
+ setBenchMarkProps ${YARD_IG} yardstick-ignite
+
+ forIpsIn agents.txt scpUp ~/configuration/ignite-ec2-config.xml yardstick-ignite/config/ ec2-user
+ forIpAt 1 agents.txt sshCmd 'cd  yardstick-ignite/bin; ./benchmark-run-all.sh ../config/benchmark-ec2.properties' ec2-user
+
+ collectResults	yardstick-ignite
+}
+
+compairResults () {
+ results=($(find -type d -name results-*))
+ $YARD_HZ/bin/jfreechart-graph-gen.sh -gm COMPARISON -i ${results[0]} ${results[1]}
+}
+
+output="$(date '+%Y_%m_%d-%H_%M_%S')"
+mkdir -p ${output}
+cp agents.txt ${output} &> /dev/null
+cd ${output}
+
+
+initCmdArgs
+initSimulatorProperties
+
+awsCreate $(( servers + drivers )) jenkins-ec2
+//initBoxes
+
+agentsIdx=$((servers+1))
+serverIps=$(forPrivateIpsIn agents.txt echo | sed -n 1,${servers}p | linesByComma)
+driverIps=$(forPrivateIpsIn agents.txt echo | sed -n ${agentsIdx},${drivers}p | linesByComma)
+
+setLatestHazelcast
+runYardstickHz
+
+setLatestIgnite
+runYardstickIg
+
+compairResults
