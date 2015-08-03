@@ -1,11 +1,35 @@
 #!/bin/sh
 
-hzBranch=${1:-master}
+hzTag=""
+hzBranch="master"
 
+OPTS=`getopt -o : --long  hzTag:,hzBranch: -n 'parse-options' -- "$@"`
+if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
+
+initCmdArgs () {
+ eval set -- "$OPTS"
+
+ while true; do
+  case "$1" in
+    --hzTag ) hzTag="$2"; shift 2  ;;
+    --hzBranch ) hzBranch="$2"; shift 2  ;;
+    -- ) shift; break ;;
+    * ) break ;;
+  esac
+ done
+}
+
+initCmdArgs
+
+git -C "${HAZELCAST_HOME}" fetch --tags
 git -C "${HAZELCAST_HOME}" remote update
 git -C "${HAZELCAST_HOME}" checkout "${hzBranch}"
 
-res=$(git -C "${HAZELCAST_HOME}" pull)
+if [ "${hzTag}" == "" ] ; then
+ res=$(git -C "${HAZELCAST_HOME}" pull)
+else
+ git -C "${HAZELCAST_HOME}" checkout ${hzTag}
+fi
 
 echo "Hazelcast $res"
 

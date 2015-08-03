@@ -3,7 +3,7 @@
 cleanup() {
     exitCode=$?
  
-    #provisioner --terminate
+    provisioner --terminate
 
     if (( $exitCode != 0 )) ; then 
       hear=$(pwd)	
@@ -11,7 +11,7 @@ cleanup() {
       slackPost simulator-fail FAIL \<http://54.87.52.100/~jenkins/${hear}\> exit code !=0
     fi
 
-    exit $rv
+    exit $exitCode
 }
 
 trap "cleanup" INT TERM EXIT
@@ -59,7 +59,7 @@ updateRepos () {
      exit 1
    fi
  else
-   update-hazelcast "${hzBranch}"
+   update-hazelcast --hzBranch "${hzBranch}"
    getHazelcastVersion
  fi
 
@@ -113,9 +113,10 @@ lookForErrors () {
  hprof=$(find . -name *.hprof)
  hs_err=$(find . -name hs_err_pid*)
  failures=$(find . -name failures*)
+ core=$(find . -name *.core) 
 
- if [ -n "${hprof}"  ] || [ -n "${hs_err}"  ] || [ -n "${failures}"  ] ; then
-   printf "\nFAIL!\n${hprof}\n${hs_err}\n${failures}\n"
+ if [ -n "${hprof}"  ] || [ -n "${hs_err}"  ] || [ -n "${failures}"  ] || [ -n "${core}"  ]; then
+   printf "\nFAIL!\n${hprof}\n${hs_err}\n${failures}\n{core}\n"
    pwd
    exit 1
  fi
@@ -130,18 +131,17 @@ setDirStruct () {
 
 mainFunction () {
  initCmdArgs
+
  updateRepos
+ setDirStruct
+
  setSimulatorProps
  provisionBoxes
 
  ./run ${boxCount} ${memberBox} ${members} ${clients} ${duration}
- returnCode=$?
 
  saveOppSysMsgs
  lookForErrors
-
- exit $returnCode
 }
 
-setDirStruct
-mainFunction 2>&1 | tee run.log
+mainFunction 

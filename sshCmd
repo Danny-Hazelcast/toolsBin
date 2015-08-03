@@ -2,7 +2,7 @@
 
 ip=$1
 cmd=$2
-user=${3:-simulator}
+user=${3:-$(whoami)}
 
 simUser=$(grep -oh USER.* simulator.properties 2>/dev/null | cut -d = -f2)
 

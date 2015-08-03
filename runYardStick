@@ -6,8 +6,16 @@ machienSpec=""
 subnet=""
 serverIps=""
 driverIps=""
+version=""
+hzTag=""
 
-OPTS=`getopt -o : --long  servers:,drivers:,subnet:,machienSpec: -n 'parse-options' -- "$@"`
+cleanup() {
+    provisioner --terminate
+}
+
+trap "cleanup" INT TERM EXIT
+
+OPTS=`getopt -o : --long  servers:,drivers:,subnet:,machienSpec:,hzTag: -n 'parse-options' -- "$@"`
 if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
 
 initCmdArgs () { 
@@ -19,6 +27,7 @@ initCmdArgs () {
     --drivers ) drivers="$2"; shift 2 ;;
     --subnet ) subnet="$2"; shift 2 ;;
     --machienSpec ) machienSpec="$2";  shift 2 ;;
+    --hzTag ) hzTag="$2"; shift 2 ;;
     * ) break ;;
   esac
  done
@@ -59,7 +68,12 @@ setLatestIgnite () {
 }
 
 setLatestHazelcast () {
- update-hazelcast
+
+ if [ "${1}" == "" ] ; then
+  update-hazelcast
+ else
+  update-hazelcast --hzTag "${1}"
+ fi
  version=$(getHazelcastVersion)
  
  sshAll 'rm yardstick-hazelcast/libs/hazelcast-*.jar' ec2-user
@@ -80,9 +94,12 @@ initSimulatorProperties () {
 setBenchMarkProps () {
  localRepo=$1
  remoteRepo=$2
+ ver=$3
+
  sed -i "s/SERVER_HOSTS=.*/SERVER_HOSTS=${serverIps}/" ${localRepo}/config/benchmark-ec2.properties
  sed -i "s/DRIVER_HOSTS=.*/DRIVER_HOSTS=${driverIps}/" ${localRepo}/config/benchmark-ec2.properties
- sed -i 's/REMOTE_USER=.*/REMOTE_USER=ec2-user/' ${localRepo}/config/benchmark-ec2.properties
+ sed -i 's/REMOTE_USER=.*/REMOTE_USER=ec2-user/' ${localRepo}/config/benchmark-ec2.properties 
+ sed -i "s/VER_ID=.*/VER_ID=${ver}/" ${localRepo}/config/benchmark-ec2.properties
 
  forIpsIn agents.txt scpUp ${localRepo}/config/benchmark-ec2.properties ${remoteRepo}/config/ ec2-user
 } 
@@ -97,7 +114,7 @@ collectResults () {
 }
 
 runYardstickHz () {
- setBenchMarkProps ${YARD_HZ} yardstick-hazelcast
+ setBenchMarkProps ${YARD_HZ} yardstick-hazelcast ${version}
 
  cp ~/configuration/hazelcast-ec2.xml .
  initHzMembersXml agents.txt hazelcast-ec2.xml
@@ -108,7 +125,7 @@ runYardstickHz () {
 }
 
 runYardstickIg () {
- setBenchMarkProps ${YARD_IG} yardstick-ignite
+ setBenchMarkProps ${YARD_IG} yardstick-ignite ${version}
 
  forIpsIn agents.txt scpUp ~/configuration/ignite-ec2-config.xml yardstick-ignite/config/ ec2-user
  forIpAt 1 agents.txt sshCmd 'cd  yardstick-ignite/bin; ./benchmark-run-all.sh ../config/benchmark-ec2.properties' ec2-user
@@ -121,6 +138,26 @@ compairResults () {
  $YARD_HZ/bin/jfreechart-graph-gen.sh -gm COMPARISON -i ${results[0]} ${results[1]}
 }
 
+runHazelcastVsIgnite () {
+ setLatestHazelcast
+ runYardstickHz
+
+ setLatestIgnite
+ runYardstickIg
+
+ compairResults
+}
+
+runHazelcastVsHazelcast () {
+ setLatestHazelcast
+ runYardstickHz
+
+ setLatestHazelcast ${hzTag}
+ runYardstickHz 
+
+ compairResults
+}
+
 output="$(date '+%Y_%m_%d-%H_%M_%S')"
 mkdir -p ${output}
 cp agents.txt ${output} &> /dev/null
@@ -131,16 +168,21 @@ initCmdArgs
 initSimulatorProperties
 
 awsCreate $(( servers + drivers )) jenkins-ec2
-//initBoxes
+#initBoxes
 
-agentsIdx=$((servers+1))
 serverIps=$(forPrivateIpsIn agents.txt echo | sed -n 1,${servers}p | linesByComma)
-driverIps=$(forPrivateIpsIn agents.txt echo | sed -n ${agentsIdx},${drivers}p | linesByComma)
+to=$((servers+1))
+from=$((drivers+1))
+driverIps=$(forPrivateIpsIn agents.txt echo | sed -n ${to},${from}p | linesByComma)
 
-setLatestHazelcast
-runYardstickHz
+mkdir -p hazelcastMaster-Vs-IgniteMaster
+cp agents.txt hazelcastMaster-Vs-IgniteMaster &> /dev/null
+cd hazelcastMaster-Vs-IgniteMaster
+runHazelcastVsIgnite
+cd ..
 
-setLatestIgnite
-runYardstickIg
-
-compairResults
+mkdir -p hazelcastMaster-Vs-hazelcast-${hzTag}
+cp agents.txt hazelcastMaster-Vs-hazelcast-${hzTag} &> /dev/null
+cd hazelcastMaster-Vs-hazelcast-${hzTag}
+runHazelcastVsHazelcast
+cd ..
