@@ -1,18 +1,6 @@
 #!/bin/sh
 
-res=$(git -C "${SIMULATOR_ROOT}" pull)
-
-echo "simulator $res"
-
-if [ "$res" == "Already up-to-date." ] ; then
-  exit 0
-fi
-
-
-
-if ! mvn -f "${SIMULATOR_ROOT}/pom.xml" -U clean install -DskipTests ; then
-	exit 1
-fi 
+update-repo "${SIMULATOR_ROOT}" $1 $2
 
 version=$(mvn -f "${SIMULATOR_ROOT}/pom.xml" org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v '\[')
 

@@ -1,18 +1,18 @@
 #!/bin/bash
 
-set -e
-
 cleanup() {
     exitCode=$?
+ 
+    provisioner --terminate
 
-    provisioner --terminate || true
-
-    hear=$(pwd | grep -oh workspace.*)
+    hear=$( pwd | grep -oh workspace.*)
     echo http://54.87.52.100/~jenkins/${hear}
+
     if (( $exitCode != 0 )) ; then 
-      slackPost simulator-fail FAIL \<http://54.87.52.100/~jenkins/${hear}\>
+      echo FAIL 
+      slackPost simulator-fail FAIL \<http://54.87.52.100/~jenkins/${hear}\> exit code !=0
     fi
-    
+
     exit $exitCode
 }
 
@@ -26,9 +26,10 @@ duration=1h
 ee=false
 machienSpec=""
 testDir=""
-checkoutTarget="master"
+hzBranch="master"
 
-OPTS=`getopt -o : --long  boxCount:,memberBox:,members:,clients:,duration:,ee:,machienSpec:,testDir:,checkout: -n 'parse-options' -- "$@"` || { echo "Failed parsing options." >&2 ; exit 1; }
+OPTS=`getopt -o : --long  boxCount:,memberBox:,members:,clients:,duration:,ee:,machienSpec:,testDir:,hzBranch: -n 'parse-options' -- "$@"` 
+if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
 
 initCmdArgs () { 
  eval set -- "$OPTS"
@@ -43,7 +44,7 @@ initCmdArgs () {
     --duration ) duration="$2"; shift 2  ;;
     --machienSpec ) machienSpec="$2"; shift 2  ;;
     --testDir ) testDir="$2"; shift 2  ;;
-    --checkout ) checkoutTarget="$2"; shift 2  ;;
+    --hzBranch ) hzBranch="$2"; shift 2  ;;
     -- ) shift; break ;;
     * ) break ;;
   esac
@@ -51,20 +52,29 @@ initCmdArgs () {
 }
 
 updateRepos () {
- update-stabilizer
- update-hazelcast "${checkoutTarget}"
-      
- if [ "$ee" == "true" ]; then 
-   update-hazelcast-ee "${checkoutTarget}"
+ if ! update-stabilizer ; then
+   exit 1
+ fi
+ 
+ if ! update-hazelcast --hzBranch "${hzBranch}" ; then
+   exit 1
  fi
 
- update-eeTests
+ if [ "$ee" == "true" ]; then 
+  if ! update-hazelcast-ee ; then
+   exit 1
+  fi
+ fi
+
+ if ! update-eeTests ; then
+   exit 1
+ fi
 }
 
 setDirStruct () {
  output="$(pwd)/$(getHazelcastVersion)/$(date '+%Y_%m_%d-%H_%M_%S')"
  mkdir -p ${output}
- cp agents.txt ${output} 2>/dev/null || true
+ cp agents.txt ${output} 2>/dev/null
  cd ${output}
 }
 
@@ -86,32 +96,51 @@ setSimulatorProps () {
 }
 
 provisionBoxes () {
- awsCreate ${boxCount} jenkins-ec2-key
- provisioner --enterpriseEnabled ${ee} --restart
+ if ! awsCreate ${boxCount} jenkins-ec2-key ; then
+   exit 1
+ fi
+
+ if ! provisioner --enterpriseEnabled ${ee} --restart ; then
+   exit 1
+ fi
  provisioner --clean
+}
+
+saveOppSysMsgs () {
+ sshAll 'netstat -i' > allBox_netstat-i.txt
+ sshAll 'ifconfig eth0' > allBox_ifConfig_eth0.txt
+ sshAll 'netstat -s' > allBox_netstat-s.txt
+ sshAll 'sudo cat /var/log/messages*' > allBox_logMsg.txt
 }
 
 lookForErrors () {
  hprof=$(find . -name *.hprof)
  hs_err=$(find . -name hs_err_pid*)
  failures=$(find . -name failures*)
- core=$(find . -name *.core)
+ core=$(find . -name *.core) 
 
  if [ -n "${hprof}"  ] || [ -n "${hs_err}"  ] || [ -n "${failures}"  ] || [ -n "${core}"  ]; then
    printf "\nFAIL!\n${hprof}\n${hs_err}\n${failures}\n${core}\n"
+   pwd
    exit 1
  fi
 }
 
 mainFunction () {
  initCmdArgs
+
  updateRepos
  setDirStruct
+
  setSimulatorProps
  provisionBoxes
- ./run ${boxCount} ${memberBox} ${members} ${clients} ${duration} || exitCode=$?
+
+ ./run ${boxCount} ${memberBox} ${members} ${clients} ${duration}
+ returnCode=$?
+
+ saveOppSysMsgs
  lookForErrors
- exit $exitCode
+ exit $returnCode
 }
 
 mainFunction 

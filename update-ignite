@@ -1,15 +1,3 @@
 #!/bin/sh
 
-
-res=$(git -C "${IGNITE_HOME}" pull)
-
-echo $res
-
-if [ "$res" == "Already up-to-date." ] ; then
-  exit 0
-fi
-
-if ! mvn -f "${IGNITE_HOME}/pom.xml" clean install -DskipTests ; then
-  exit 1
-fi
-
+update-repo "${IGNITE_HOME}" $1 $2

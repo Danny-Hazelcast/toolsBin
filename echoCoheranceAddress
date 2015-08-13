@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+ip=$1
+echo -n "<socket-address id=\"${ip}\"><address>$ip<\/address><port>8088<\/port><\/socket-address>"

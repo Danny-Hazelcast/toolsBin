@@ -68,12 +68,7 @@ setLatestIgnite () {
 }
 
 setLatestHazelcast () {
-
- if [ "${1}" == "" ] ; then
-  update-hazelcast
- else
-  update-hazelcast --hzTag "${1}"
- fi
+ update-hazelcast "${1}"
  version=$(getHazelcastVersion)
  
  sshAll 'rm yardstick-hazelcast/libs/hazelcast-*.jar' ec2-user
@@ -139,7 +134,7 @@ compairResults () {
 }
 
 runHazelcastVsIgnite () {
- setLatestHazelcast
+ setLatestHazelcast master
  runYardstickHz
 
  setLatestIgnite
@@ -149,7 +144,7 @@ runHazelcastVsIgnite () {
 }
 
 runHazelcastVsHazelcast () {
- setLatestHazelcast
+ setLatestHazelcast master
  runYardstickHz
 
  setLatestHazelcast ${hzTag}

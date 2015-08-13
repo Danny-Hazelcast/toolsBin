@@ -1,0 +1,135 @@
+set -e
+
+cleanup() {
+    #provisioner --terminate || true
+    hear=$(pwd | grep -oh workspace.*)
+    echo http://54.87.52.100/~jenkins/${hear}
+}
+trap "cleanup" INT TERM EXIT
+
+boxCount=2
+machienSpec=""
+checkoutTarget=""
+
+hzOlderVersion=""
+hzHatMasterVersion=""
+slaveList=""
+
+OPTS=`getopt -o : --long  boxCount:,machienSpec:,checkout: -n 'parse-options' -- "$@"` || { echo "Failed parsing options." >&2 ; exit 1; }
+
+initCmdArgs () {
+ eval set -- "$OPTS"
+ while true; do
+  case "$1" in
+    --boxCount ) boxCount="$2"; shift 2 ;;
+    --machienSpec ) machienSpec="$2"; shift 2  ;;
+    --checkout ) checkoutTarget="$2"; shift 2  ;;
+    -- ) shift; break ;;
+    * ) break ;;
+  esac
+ done
+}
+
+initBoxes () {
+ sshAll 'git clone https://github.com/Danny-Hazelcast/radargun.git'
+ forIpsIn agents.txt scpUp ~/coherence-12.1.2 .
+ forIpsIn agents.txt scpUp ~/coherence-java-3.7.1 .
+ sshAll 'mvn install:install-file -Dfile=coherence-java-3.7.1/coherence/lib/coherence.jar -DgroupId=com.oracle.coherence  -DartifactId=coherence -Dversion=3.7.1 -Dpackaging=jar'
+ sshAll 'mvn install:install-file -Dfile=coherence-java-3.7.1/coherence/lib/commonj.jar -DgroupId=com.oracle.coherence  -DartifactId=coherence-common -Dversion=3.7.1 -Dpackaging=jar'
+ sshAll 'mvn install:install-file -Dfile=coherence-12.1.2/coherence.jar -DgroupId=com.oracle.coherence  -DartifactId=coherence -Dversion=12.1.2 -Dpackaging=jar' ec2-user
+ sshAll 'cd radargun; mvn clean install -DskipTests -Pcoherence,\!ehcache,\!spymemcached,\!jbosscache,\!infinispan,\!chm,\!jdk18,\!jgroups,\!jbosscache,\hazelcast'
+ sshAll 'unzip radargun/target/distribution/*.zip -d ~'
+ sshAll 'mv RadarGun-* RadarGun-bin' 
+ sshAll 'echo export RADARGUN_HOME=\~/RadarGun-bin >> .bashrc'
+ sshAll 'echo PATH=\~/RadarGun-bin/bin:\$PATH >> .bashrc'
+ sshAll 'cd RadarGun-bin/plugins; cp -r hazelcast3 hazelcastMaster'
+}
+
+setDirStruct () {
+ output="$(pwd)/$(getHazelcastVersion)/$(date '+%Y_%m_%d-%H_%M_%S')"
+ mkdir -p ${output}
+ cp agents.txt ${output} 2>/dev/null || true
+ cd ${output}
+}
+
+updateRepos () {
+ update-hazelcast ${checkoutTarget}
+ hzOlderVersion=$(getHazelcastVersion)
+ update-hazelcast master
+ hzHatMasterVersion=$(getHazelcastVersion)  
+}
+
+initSimulatorProperties () {
+ cp ~/configuration/simulator.properties .
+ if [ -n "${machienSpec}" ]; then
+  sed -i "s|MACHINE_SPEC=.*|MACHINE_SPEC=${machienSpec}|" simulator.properties
+ fi
+}
+
+setupEnviromentScript () {
+ cp ~/radargun/core/src/main/resources/environment.sh .
+ i=1
+ slaveList=""
+ ips=($(forPrivateIpsIn agents.txt echo))
+ for ip in "${ips[@]}" ; do
+  echo m${i}_SLAVE_ADDRESS=${ip} >> environment.sh
+  slaveList="$slaveList m${i}"
+  ((i++))
+ done
+ forIpsIn agents.txt scpUp environment.sh RadarGun-bin/bin/
+}
+
+setupCohearance () {
+ cp ~/radargun/plugins/coherence12/src/main/resources/tangosol-coherence-override.xml .
+ addressXml=$(forPrivateIpsIn agents.txt echoCoheranceAddress)
+ sed -i s/'<!--SOCKET_ADDRESS-->'/"${addressXml}"/g tangosol-coherence-override.xml
+ forIpsIn agents.txt scpUp tangosol-coherence-override.xml RadarGun-bin/plugins/coherence12/conf
+}
+
+setupHz () {
+ cp ~/radargun/plugins/hazelcast3/src/main/resources/dist-sync.xml .
+ initHzMembersXml agents.txt dist-sync.xml
+ forIpsIn agents.txt scpUp dist-sync.xml RadarGun-bin/plugins/hazelcast3/conf
+ forIpsIn agents.txt scpUp dist-sync.xml RadarGun-bin/plugins/hazelcastMaster/conf
+
+ hzJar=$(find ~/.m2 -name hazelcast-${hzOlderVersion}.jar)
+ sshAll 'rm RadarGun-bin/plugins/hazelcast3/lib/hazelcast-*.jar'
+ forIpsIn agents.txt scpUp ${hzJar} RadarGun-bin/plugins/hazelcast3/lib
+
+ hzJar=$(find ~/.m2 -name hazelcast-${hzHatMasterVersion}.jar)
+ sshAll	'rm RadarGun-bin/plugins/hazelcastMaster/lib/hazelcast-*.jar'
+ forIpsIn agents.txt scpUp ${hzJar} RadarGun-bin/plugins/hazelcastMaster/lib
+}
+
+runBench () {
+ benchXml=$1
+ output=$2
+ sshAll "mkdir ${output}"
+ forIpsIn agents.txt scpUp ${benchXml} ${output}/
+ forIpAt 1 agents.txt sshCmd "cd ${output}; dist.sh -t -c ${benchXml} -u ec2-user ${slaveList}"
+ forIpAt 1 agents.txt scpDown ${output}/results ${output}_coherance12x_vs_hz${hzOlderVersion}_vs_${hzHatMasterVersion}
+ forIpsIn agents.txt scpDown ${output} ${output}_logs
+}
+
+runAllBench () {
+ cp ~/radargun/core/src/main/resources/hz-benchmark*.xml .
+ for bench in hz-benchmark-*.xml ; do
+  runBench ${bench} $(basename ${bench} .xml)
+ done
+}
+
+main () {
+ initCmdArgs
+ updateRepos
+ setDirStruct
+ initSimulatorProperties
+ awsCreate $boxCount jenkins-ec2
+ setupEnviromentScript
+
+ setupHz
+ setupCohearance
+ 
+ runAllBench
+}
+
+main
