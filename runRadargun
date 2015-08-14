@@ -114,6 +114,7 @@ runBench () {
 runAllBench () {
  cp ~/radargun/core/src/main/resources/hz-benchmark*.xml .
  for bench in hz-benchmark-*.xml ; do
+  sed -i -e "s/\${hzOlderVersion}/${hzOlderVersion}/" -e "s/\${hzHatMasterVersion}/${hzHatMasterVersion}/" ${bench}
   runBench ${bench} $(basename ${bench} .xml)
  done
 }

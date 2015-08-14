@@ -55,7 +55,7 @@ updateRepos () {
  update-hazelcast "${checkoutTarget}"
       
  if [ "$ee" == "true" ]; then 
-   update-hazelcast-ee "${checkoutTarget}"
+   update-hazelcast-ee "${checkoutTarget}" build
  fi
 
  update-eeTests
