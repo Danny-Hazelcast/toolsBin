@@ -4,6 +4,9 @@ declare -a fields=("processors=" "physical.memory.total=" "physical.memory.free=
 
 files=$(find . -name worker.log | grep server)
 
+if [[ "$files" == "" ]] ; then
+ exit
+fi
 
 timeStr="[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9],[0-9][0-9][0-9]"
 
