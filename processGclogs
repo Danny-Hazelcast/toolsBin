@@ -1,0 +1,53 @@
+gclogs=$(find . -name *gc.log)
+
+for logFile in $gclogs ; do
+
+ d="$(dirname ${logFile})"
+
+ awk '/Application time/ { apprun += $(NF-1) } /threads were stopped/ { appstop +=  $(NF-1) } END {
+          total = apprun + appstop
+          printf("Total execution time                %.2fsecs\n", total)
+          printf("Time appication ran                 %.2fsecs\n", apprun)
+          printf("Time application was stopped        %0.2fsecs\n", appstop)
+          printf("%% of time application ran           %.2f%%\n", apprun / total * 100)
+          printf("%% of time application was stopped   %.2f%%\n", appstop / total * 100)
+ }' ${logFile} > ${d}/stwSummery.txt
+
+ grep "Total time for which application threads were stopped" ${logFile} | awk '{print $1 $10}' > ${d}/stwSeconds.txt
+
+ grep "Full" ${logFile} | awk '{print $1 $14}' | sed 's/user=//g' > ${d}/fullGcUserTime.txt
+ grep "Full" ${logFile} | awk '{print $1 $16}' | sed 's/real=//g' > ${d}/fullGcRealTime.txt
+
+ cat ${logFile} | sed '/\[GC/{N;s/\n/ /;}' | sed '/\[GC/{N;s/\n/ /;}' | grep '\[PSYoungGen' | awk '{print $1 $14}' | sed 's/-.*//' | sed 's/K//' > ${d}/YoungGenBefor.txt
+ cat ${logFile} | sed '/\[GC/{N;s/\n/ /;}' | sed '/\[GC/{N;s/\n/ /;}' | grep '\[PSYoungGen' | awk '{print $1 $14}' | sed 's/:.*>/:/' | sed 's/K.*//' > ${d}/YoungGenAfter.txt
+ cat ${logFile} | sed '/\[GC/{N;s/\n/ /;}' | sed '/\[GC/{N;s/\n/ /;}' | grep '\[PSYoungGen' | awk '{print $1 $14}' | sed 's/:.*(/:/' | sed 's/K.*//' > ${d}/YoungGenCapacity.txt
+
+ cat ${logFile} | grep Full | awk '{print $1 $5}' | sed 's/-.*//' | sed 's/K//' > ${d}/fullGc-YoungGenBefor.txt 
+ cat ${logFile} | grep Full | awk '{print $1 $5}' | sed 's/:.*>/:/' | sed 's/K.*//' > ${d}/fullGc-YoungGenAfter.txt
+ cat ${logFile} | grep Full | awk '{print $1 $5}' | sed 's/:.*(/:/' | sed 's/K.*//' > ${d}/fullGc-YoungGenCapacity.txt
+
+ cat ${logFile} | grep Full | awk '{print $1 $7}' | sed 's/-.*//' | sed 's/K//' > ${d}/fullGc-ParOldGenBefor.txt
+ cat ${logFile} | grep Full | awk '{print $1 $7}' | sed 's/:.*>/:/' | sed 's/K.*//' > ${d}/fullGc-ParOldGenAfter.txt
+ cat ${logFile} | grep Full | awk '{print $1 $7}' | sed 's/:.*(/:/' | sed 's/K.*//' > ${d}/fullGc-ParOldGenCapacity.txt
+
+ cat ${logFile} | grep Full | awk '{print $1 $10}' | sed 's/-.*//' | sed 's/K//' > ${d}/fullGc-PSPermGenBefor.txt
+ cat ${logFile} | grep Full | awk '{print $1 $10}' | sed 's/:.*>/:/' | sed 's/K.*//' > ${d}/fullGc-PSPermGenAfter.txt
+ cat ${logFile} | grep Full | awk '{print $1 $10}' | sed 's/:.*(/:/' | sed 's/K.*//' > ${d}/fullGc-PSPermGenCapacity.txt
+
+ fullGcCount=$(grep "Full" ${logFile} | wc -l)
+
+ echo "${d} ${fullGcCount}" > ${d}/fullGcCount.txt
+
+done
+
+gclogs=$(find . -wholename *server/fullGcCount.txt)
+
+for logFile in $gclogs ; do
+ cat ${logFile}	>> member-fullGcCount.txt
+done
+
+gclogs=$(find . -wholename *client/fullGcCount.txt)
+
+for logFile in $gclogs ; do
+ cat ${logFile} >> client-fullGcCount.txt
+done

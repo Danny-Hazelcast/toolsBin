@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+FILE_PATTERN=$1
+idx=$2
+title=$3
+yAxisTitle=$4
+
+
+files=$(find . -name ${FILE_PATTERN} | xargs -n1 -I% echo -n " \"%\" using $idx:xtic(1) with boxes,")
+
+files="${files%?}"
+
+cat > plotScript << EOF
+
+set datafile commentschars '#!"'
+set datafile separator " "
+
+set style data histogram
+
+#set xtics border in scale 0,0 nomirror rotate by -45  autojustify
+set xtics border in scale 0,0 nomirror rotate by -90
+
+set style fill solid border -1
+set boxwidth 0.2
+set key left top
+
+set xlabel "jvms"
+set ylabel "${yAxisTitle}"
+set title "${title}"
+
+set terminal png enhanced size 1280,1024
+set output "${title}-${yAxisTitle}.png"
+plot $files
+
+EOF
+
+gnuplot plotScript
+
