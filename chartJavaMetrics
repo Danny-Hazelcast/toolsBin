@@ -6,7 +6,7 @@ ytitle=$3
 
 
 #  1     2     3       4            5                 6                   7                8        9        10            11     12            13
-#Date, Ticks, Count, Mean-Rate, One-Minute-Rate, Five-Minute-Rate, Fifteen-Minute-Rate, Rate-Unit, Last, Last-User-Value, Min, Min-User-Value, Max, 
+#Date, Ticks, Count, Mean-Rate, One-Minute-Rate, Five-Minute-Rate, Fifteen-Minute-Rate, Rate-Unit, Last, Last-User-Value, Min, Min-User-Value, Max,
 #   14            15     16     17     18   19   20   21
 #Max-User-Value, Mean, StdDev, Median, 75%, 95%, 98%, 99%,
 

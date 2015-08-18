@@ -6,8 +6,10 @@ user=${2:-$(whoami)}
 echo ${user}@${ip}
 
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${user}@${ip} << EOF
+
 	jps | grep Member.* | cut -d ' ' -f1 | xargs -L 1 -I% jstack % >> ${ip}-serverJstack.out
 	jps | grep Client.* | cut -d ' ' -f1 | xargs -L 1 -I% jstack % >> ${ip}-clientJstack.out
+
 EOF
 
 scpDown ${ip} *serverJstack.out jstack ${user}

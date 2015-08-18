@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+box=$1
+echo -n "<value>$box<\/value>"
