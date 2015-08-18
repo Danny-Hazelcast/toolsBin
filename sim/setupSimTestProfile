@@ -51,5 +51,5 @@ do
 	sed -i s/'members=$2'/members=${members}/g ${profile}/${clusterProfile}/run.sh
 	sed -i s/'clients=$3'/clients=${clients}/g ${profile}/${clusterProfile}/run.sh
 	sed -i s/'duration=$4'/duration=${duration}/g ${profile}/${clusterProfile}/run.sh
-	sed -i s/'HAZELCAST_VERSION_SPEC=maven=???'/HAZELCAST_VERSION_SPEC=maven=${version}/g ${profile}/${clusterProfile}/simulator.properties
+	sed -i s/'HAZELCAST_VERSION_SPEC=maven=???'/HAZELCAST_VERSION_SPEC=maven=${profile}/g ${profile}/${clusterProfile}/simulator.properties
 done
