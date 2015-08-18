@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+FILE_PATTERN=$1
+idx=$2
+title=$3
+yAxisTitle=$4
+
+files=$(find .  -wholename ${FILE_PATTERN} | xargs -n1 -I% echo -n " \"%\" using 1:$idx with lines,")
+
+files="${files%?}"
+
+cat > plotScript << EOF
+
+set datafile separator ","
+set datafile commentschars '#!%"'
+
+set xdata time
+set timefmt '%d-%m %H:%M:%S'
+set format x "%H:%M:%S"
+#set format y "%f"
+
+set xlabel "Time"
+set ylabel "${yAxisTitle}"
+set title "${title}"
+
+set terminal png enhanced size 1280,1024
+set output "${title}-${yAxisTitle}.png"
+set key left top
+plot $files
+
+EOF
+
+gnuplot plotScript
+

@@ -1,6 +1,0 @@
-
-cmd=$1
-user=${2:-$(whoami)}
-file=${3:-agents.txt}
-
-forIpsIn "${file}" sshCmd "${cmd}" "${user}"

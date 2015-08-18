@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+patern=$1
+user=${2:- $(whoami)}
+
+sshAll "find . -name worker.log | xargs grep '$patern' " $user

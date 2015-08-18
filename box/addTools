@@ -1,0 +1,5 @@
+
+sshAll 'sudo yum install -y dstat &>yumDstat.txt &'
+sshAll '(wget http://www.azulsystems.com/products/jhiccup/download_zip &>jhicDown.txt; unzip download_zip &>zippy.txt) &'
+
+sshAll 'echo export _JAVA_OPTIONS='"\'"'-javaagent:${HOME}/jHiccup-2.0.2/jHiccup.jar=\"-d 8000 -i 1000\"'"\'"' >> .bashrc'

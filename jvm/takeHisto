@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+ip=$1
+user=${2:-$(whoami)}
+
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${user}@${ip} << EOF
+
+  jps | grep Member.* | cut -d ' ' -f1 | xargs -L 1 -I%  jmap -histo % > member-$1-histo.out
+
+EOF
+
+scpDown ${ip} *histo.out histo

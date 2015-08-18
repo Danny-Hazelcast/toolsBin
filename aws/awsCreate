@@ -1,0 +1,42 @@
+boxCount=${1:-1}
+keyName=${2:-defaultKey}
+
+subnet=${3:-subnet-378d2140}
+placeGorup=${4:-hzpc2}
+
+simFile=${5:-simulator.properties}
+agentFile=${6:-agents.txt}
+
+
+currentBoxCount=$(cat ${agentFile} 2>/dev/null | wc -l)
+
+boxCount=$(( ${boxCount} - ${currentBoxCount} ))
+if (( ${boxCount} <= 0)) ; then
+  exit 0
+fi
+
+hardwareId=$(grep -orh -P hardwareId=.*?, ${simFile} | cut -d '=' -f2 | sed 's/,//g')
+locationId=$(grep -orh -P locationId=.*?, ${simFile} | cut -d '=' -f2 | sed 's/,//g')
+ami=$(grep -oh imageId=.* ${simFile} | cut -d / -f2)
+
+echo $keyName
+echo $hardwareId
+echo $locationId
+echo $ami
+echo $subnet
+echo $placeGorup
+
+ids=$(aws ec2 run-instances --image-id ${ami} --region ${locationId} --instance-type ${hardwareId} --placement GroupName=${placeGorup} --subnet-id ${subnet} --key ${keyName} --count ${boxCount} --output text --query 'Instances[*].InstanceId')
+#ids=$(aws ec2 run-instances --image-id ${ami} --region ${locationId} --instance-type ${hardwareId} --key ${keyName} --count ${boxCount} --output text --query 'Instances[*].InstanceId')
+rc=$?
+
+if ((${rc} != 0)) ; then
+  echo 'fail'
+  exit $boxCount
+fi
+
+ec2-create-tags $ids --tag "Name=${keyName}"
+aws ec2 describe-instances --instance-ids ${ids}  --output text --query 'Reservations[*].Instances[*].[PublicIpAddress,PrivateIpAddress]' | tr "\\t" "," >> agents.txt
+
+sleep 30
+awsRemoveBadBoxes ec2-user agents.txt

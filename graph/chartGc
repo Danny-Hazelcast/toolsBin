@@ -1,0 +1,26 @@
+
+plotGcTimeSeries *server/fullGcRealTime.txt 2 server-fullgc-real-time 'jvm-pause-seconds'
+plotGcTimeSeries *server/fullGcUserTime.txt 2 server-fullgc-user-time 'jvm-pause-seconds'
+plotGcTimeSeries *server/stwSeconds.txt 2 server-stop-world 'jvm-pause-seconds'
+
+plotGcTimeSeries *server/YoungGenBefor.txt 2 server-YoungGenBefor 'K'
+plotGcTimeSeries *server/YoungGenAfter.txt 2 server-YoungGenAfter 'K'
+plotGcTimeSeries *server/YoungGenCapacity.txt 2 server-YoungGenCapacity 'K'
+
+plotGcTimeSeries *server/fullGc-YoungGenBefor.txt 2 server-fullGc-YoungGenBefor 'K'
+plotGcTimeSeries *server/fullGc-YoungGenAfter.txt 2 server-fullGc-YoungGenAfter 'K'
+plotGcTimeSeries *server/fullGc-YoungGenCapacity.txt 2 server-fullGc-YoungGenCapacity 'K'
+
+plotGcTimeSeries *server/fullGc-ParOldGenBefor.txt 2 server-fullGc-ParOldGenBefor 'K'
+plotGcTimeSeries *server/fullGc-ParOldGenAfter.txt 2 server-fullGc-ParOldGenAfter 'K'
+plotGcTimeSeries *server/fullGc-ParOldGenCapacity.txt 2 server-fullGc-ParOldGenCapacity 'K'
+
+plotGcTimeSeries *server/fullGc-PSPermGenBefor.txt 2 server-fullGc-PSPermGenBefor 'K'
+plotGcTimeSeries *server/fullGc-PSPermGenAfter.txt 2 server-fullGc-PSPermGenAfter 'K'
+plotGcTimeSeries *server/fullGc-PSPermGenCapacity.txt 2 server-fullGc-PSPermGenCapacity 'K'
+
+plotSpaceDelimHist member-fullGcCount.txt 2 server-fullGc 'count'
+plotSpaceDelimHist client-fullGcCount.txt 2 client-fullGc 'count'
+
+#plotGcTimeSeries *client/fullGcUserTime.txt 2 client-fullgc-user-time 'jvm-pause-seconds'
+#plotGcTimeSeries *client/stwSeconds.txt 2 client-stw-seconds 'jvm-pause-seconds'

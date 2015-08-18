@@ -1,0 +1,105 @@
+#!/bin/bash
+
+set -e
+
+cleanup() {
+    exitCode=$?
+
+    provisioner --terminate || true
+
+    hear=$(pwd | grep -oh workspace.*)
+    echo http://54.87.52.100/~jenkins/${hear}
+    if (( $exitCode != 0 )) ; then 
+      slackPost simulator-fail FAIL \<http://54.87.52.100/~jenkins/${hear}\>
+    fi
+    
+    exit $exitCode
+}
+
+trap "cleanup" INT TERM EXIT
+
+boxCount=2
+memberBox=0
+members=2
+clients=2
+duration=1h
+ee=false
+machienSpec=""
+testDir=""
+checkoutTarget="master"
+
+OPTS=`getopt -o : --long  boxCount:,memberBox:,members:,clients:,duration:,ee:,machienSpec:,testDir:,checkout: -n 'parse-options' -- "$@"` || { echo "Failed parsing options." >&2 ; exit 1; }
+
+initCmdArgs () { 
+ eval set -- "$OPTS"
+  
+ while true; do
+  case "$1" in
+    --ee ) ee="$2"; shift 2 ;;
+    --boxCount ) boxCount="$2"; shift 2 ;;
+    --memberBox ) memberBox="$2"; shift 2 ;; 
+    --members ) members="$2"; shift 2 ;;
+    --clients ) clients="$2"; shift 2 ;;
+    --duration ) duration="$2"; shift 2  ;;
+    --machienSpec ) machienSpec="$2"; shift 2  ;;
+    --testDir ) testDir="$2"; shift 2  ;;
+    --checkout ) checkoutTarget="$2"; shift 2  ;;
+    -- ) shift; break ;;
+    * ) break ;;
+  esac
+ done
+}
+
+updateRepos () {
+ update-stabilizer
+ update-hazelcast "${checkoutTarget}"
+      
+ if [ "$ee" == "true" ]; then 
+   update-hazelcast-ee "${checkoutTarget}" build
+ fi
+
+ update-eeTests
+}
+
+setDirStruct () {
+ output="$(pwd)/$(getHazelcastVersion)/$(date '+%Y_%m_%d-%H_%M_%S')"
+ mkdir -p ${output}
+ cp agents.txt ${output} 2>/dev/null || true
+ cd ${output}
+}
+
+setSimulatorProps () {
+ cp $SIMULATOR_HOME/simulator-tests/*.properties .
+ cp ~/configuration/run .
+ cp ~/configuration/simulator.properties .
+
+ if [ -n "${testDir}" ]; then
+   cp -fr $SIM_EE_TEST_DIR/${testDir}/. .
+ fi
+
+ hzVersion=$(getHazelcastVersion)
+ sed -i s/maven=.*/maven="${hzVersion}"/ simulator.properties
+
+ if [ -n "${machienSpec}" ]; then
+   sed -i "s|MACHINE_SPEC=.*|MACHINE_SPEC=${machienSpec}|" simulator.properties
+ fi
+}
+
+provisionBoxes () {
+ awsCreate ${boxCount} jenkins-ec2-key
+ provisioner --enterpriseEnabled ${ee} --restart
+ provisioner --clean
+}
+
+mainFunction () {
+ initCmdArgs
+ updateRepos
+ setDirStruct
+ setSimulatorProps
+ provisionBoxes
+ ./run ${boxCount} ${memberBox} ${members} ${clients} ${duration} || exitCode=$?
+ lookForErrors
+ exit $exitCode
+}
+
+mainFunction 

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+user=${1:-$(whoami)}
+agentsfile=${2:-agents.txt}
+
+sshAll "dstat -tciymn --socket --tcp -rsgd --output dstat.csv > /dev/null &" ${user}

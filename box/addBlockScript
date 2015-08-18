@@ -1,0 +1,14 @@
+#!/bin/sh
+
+agentsfile=${1:-agents.txt}
+
+sshAll "
+echo `sudo /sbin/iptables -A INPUT -p tcp --dport 22 -m state --state NEW,ESTABLISHED -j ACCEPT
+      sudo /sbin/iptables -A OUTPUT -p tcp --sport 22 -m state --state ESTABLISHED -j ACCEPT
+      sudo /sbin/iptables -A INPUT -p tcp --dport 9000 -m state --state NEW,ESTABLISHED -j ACCEPT
+      sudo /sbin/iptables -A OUTPUT -p tcp --sport 9000 -m state --state ESTABLISHED -j ACCEPT
+      sudo /sbin/iptables -A INPUT -p tcp --dport 9001 -m state --state NEW,ESTABLISHED -j ACCEPT
+      sudo /sbin/iptables -A OUTPUT -p tcp --sport 9001 -m state --state ESTABLISHED -j ACCEPT
+      sudo /sbin/iptables -A INPUT -i $1 -j DROP
+      sudo /sbin/iptables -A OUTPUT -o $1 -j DROP` > block.sh;
+chmod +x block.sh;"

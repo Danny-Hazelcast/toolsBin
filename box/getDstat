@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+user=${1:-$(whoami)}
+agentsfile=${2:-agents.txt}
+to=${3:-dstat}
+
+sshAll "killall -9 dstat" ${user}
+#sshAll "killall -9 python"
+
+forIpsIn ${agentsfile} scpDown dstat.csv ${to} ${user}
+sshAll "rm dstat.csv" ${user}

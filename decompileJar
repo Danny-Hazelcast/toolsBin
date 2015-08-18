@@ -1,4 +1,0 @@
-
-jar=$1
-out=$(basename ${jar})
-zipinfo -1 ${jar} \*.class| sed 's/\.class//' | xargs javap -classpath "$jar" -c -l -private > ${out}.javap

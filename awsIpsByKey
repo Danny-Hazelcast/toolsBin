@@ -1,2 +1,0 @@
-keyName=${1:-danny}
-ec2-describe-instances --filter key-name=${keyName} | grep -oh monitoring.*vpc | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" | awk 'NR%2{printf $0" ";next;}1' | sed 's/ /,/g'

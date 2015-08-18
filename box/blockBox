@@ -1,0 +1,8 @@
+#!/bin/sh
+
+ip=$1
+user=${2:- $(whoami)}
+
+echo "blocking $ip"
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${user}@${ip} "./block.sh eth0 &"
+

@@ -1,0 +1,2 @@
+keyName=$1
+aws ec2 describe-instances --output text --filter Name=key-name,Values="${keyName}" --query 'Reservations[*].Instances[*].[PublicIpAddress,PrivateIpAddress]' | tr "\\t" ","

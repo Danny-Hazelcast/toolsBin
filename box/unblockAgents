@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+agentsfile=${1:-agents.txt}
+
+sshAll 'sudo /sbin/iptables -F &'

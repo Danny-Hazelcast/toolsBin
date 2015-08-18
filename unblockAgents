@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-agentsfile=${1:-agents.txt}
-
-forIpsIn ${agentsfile} sshCmd 'sudo /sbin/iptables -F &'
