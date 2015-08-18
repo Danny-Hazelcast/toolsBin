@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ip=$1
-user=${2:-simulator}
+user=${2:-$(whoami)}
 
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${user}@${ip} << EOF
 

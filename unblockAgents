@@ -2,4 +2,4 @@
 
 agentsfile=${1:-agents.txt}
 
-forIpsIn ${agentsfile} sshCmd 'sudo /sbin/iptables -F &'
+sshAll 'sudo /sbin/iptables -F &'

@@ -6,13 +6,13 @@ user=${3:-$(whoami)}
 
 simUser=$(grep -oh USER.* simulator.properties 2>/dev/null | cut -d = -f2)
 
-if [ -n "${simUser}" ] ; then 
- user="${simUser}"
+if [ -n "${simUser}" ] ; then
+ user=${simUser}
 fi
 
 echo "${user}@${ip} -> $cmd" 
 
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${user}@${ip} <<EOF
+ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${user}@${ip} <<EOF
 
 $cmd
 

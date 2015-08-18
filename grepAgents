@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
 patern=$1
+user=${2:- $(whoami)}
 
-forIpsIn agents.txt sshCmd "find . -name worker.log | xargs grep '$patern' "
+sshAll "find . -name worker.log | xargs grep '$patern' " $user
