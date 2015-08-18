@@ -91,18 +91,6 @@ provisionBoxes () {
  provisioner --clean
 }
 
-lookForErrors () {
- hprof=$(find . -name *.hprof)
- hs_err=$(find . -name hs_err_pid*)
- failures=$(find . -name failures*)
- core=$(find . -name *.core)
-
- if [ -n "${hprof}"  ] || [ -n "${hs_err}"  ] || [ -n "${failures}"  ] || [ -n "${core}"  ]; then
-   printf "\nFAIL!\n${hprof}\n${hs_err}\n${failures}\n${core}\n"
-   exit 1
- fi
-}
-
 mainFunction () {
  initCmdArgs
  updateRepos

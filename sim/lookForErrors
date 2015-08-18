@@ -1,0 +1,20 @@
+
+failures=$(find . -name failures*)
+hs_err=$(find . -name hs_err_pid*)
+hprof=$(find . -name *.hprof)
+core=$(find . -name *.core)
+oom=$(find . -name *.oom)
+
+
+[ -n "${failures}" ] && echo FAIL! ${failures}
+[ -n "${hs_err}" ] && echo FAIL! ${hs_err}
+[ -n "${hprof}" ] && echo FAIL! ${hprof}
+[ -n "${core}" ] && echo FAIL! ${core}
+[ -n "${oom}" ] && echo FAIL! ${oom}
+
+
+if [ -n "${hprof}" ] || [ -n "${hs_err}" ] || [ -n "${failures}" ] || [ -n "${core}" ] || [ -n "${core}" ]; then
+   exit 1
+fi
+
+
