@@ -8,6 +8,8 @@ cleanup() {
 trap "cleanup" INT TERM EXIT
 
 boxCount=2
+clusterMin=2
+clusterInc=2
 machienSpec=""
 checkoutTarget=""
 
@@ -15,13 +17,15 @@ hzOlderVersion=""
 hzHatMasterVersion=""
 slaveList=""
 
-OPTS=`getopt -o : --long  boxCount:,machienSpec:,checkout: -n 'parse-options' -- "$@"` || { echo "Failed parsing options." >&2 ; exit 1; }
+OPTS=`getopt -o : --long  boxCount:,clusterMin:,clusterInc:,machienSpec:,checkout: -n 'parse-options' -- "$@"` || { echo "Failed parsing options." >&2 ; exit 1; }
 
 initCmdArgs () {
  eval set -- "$OPTS"
  while true; do
   case "$1" in
     --boxCount ) boxCount="$2"; shift 2 ;;
+    --clusterMin ) clusterMin="$2"; shift 2 ;;
+    --clusterInc ) clusterInc="$2"; shift 2 ;;
     --machienSpec ) machienSpec="$2"; shift 2  ;;
     --checkout ) checkoutTarget="$2"; shift 2  ;;
     -- ) shift; break ;;
@@ -115,6 +119,7 @@ runAllBench () {
  cp ~/radargun/core/src/main/resources/hz-benchmark*.xml .
  for bench in hz-benchmark-*.xml ; do
   sed -i -e "s/\${hzOlderVersion}/${hzOlderVersion}/" -e "s/\${hzHatMasterVersion}/${hzHatMasterVersion}/" ${bench}
+  sed -i -e "s/\${clusterMin}/${clusterMin}/" -e "s/\${clusterMax}/${boxCount}/" -e "s/\${clusterInc}/${clusterInc}/" ${bench}
   runBench ${bench} $(basename ${bench} .xml)
  done
 }
