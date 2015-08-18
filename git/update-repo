@@ -19,8 +19,5 @@ if [ "$res" == "Already up-to-date." ] && [ "$build" != "build" ] ; then
   exit 0
 fi
 
-
-if ! mvn -f "${repo}/pom.xml" clean install -DskipTests ; then
-  exit 1
-fi
+mvn -f "${repo}/pom.xml" clean install -DskipTests
 

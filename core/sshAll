@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 cmd=$1
 user=${2:-$(whoami)}

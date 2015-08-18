@@ -8,7 +8,7 @@ user=${4:-$(whoami)}
 simUser=$(grep -oh USER.* simulator.properties 2>/dev/null | cut -d = -f2)
 
 if [ -n "${simUser}" ] ; then
- user="${simUser}"
+ user=${simUser}
 fi
 
 

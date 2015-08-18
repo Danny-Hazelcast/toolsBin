@@ -31,16 +31,9 @@
       ;;
   esac
 
-#  echo $SLACK_CHANNEL
-#  echo $SEVERITY
-#  echo $ICON
-
   MESSAGE=$@;
 
-
   PAYLOAD="payload={\"channel\": \"#${SLACK_CHANNEL}\", \"username\": \"${SLACK_BOTNAME}\", \"text\": \"${ICON} ${MESSAGE}\", \"icon_emoji\": \"${SLACK_BOTEMOJI}\"}";
-
-#  echo $PAYLOAD
 
   CURL_RESULT=$(curl -s -S -X POST --data-urlencode "$PAYLOAD" https://hooks.slack.com/services/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);
 

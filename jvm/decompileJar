@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 jar=$1
 out=$(basename ${jar})
