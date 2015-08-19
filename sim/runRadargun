@@ -1,7 +1,7 @@
 set -e
 
 cleanup() {
-    #provisioner --terminate || true
+    provisioner --terminate || true
     hear=$(pwd | grep -oh workspace.*)
     echo http://54.87.52.100/~jenkins/${hear}
 }

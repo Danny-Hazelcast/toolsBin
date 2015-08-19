@@ -27,7 +27,6 @@ echo $subnet
 echo $placeGorup
 
 ids=$(aws ec2 run-instances --image-id ${ami} --region ${locationId} --instance-type ${hardwareId} --placement GroupName=${placeGorup} --subnet-id ${subnet} --key ${keyName} --count ${boxCount} --output text --query 'Instances[*].InstanceId')
-#ids=$(aws ec2 run-instances --image-id ${ami} --region ${locationId} --instance-type ${hardwareId} --key ${keyName} --count ${boxCount} --output text --query 'Instances[*].InstanceId')
 rc=$?
 
 if ((${rc} != 0)) ; then
@@ -35,7 +34,7 @@ if ((${rc} != 0)) ; then
   exit $boxCount
 fi
 
-ec2-create-tags $ids --tag "Name=${keyName}"
+ec2-create-tags $ids --tag "Name=$(pwd)"
 aws ec2 describe-instances --instance-ids ${ids}  --output text --query 'Reservations[*].Instances[*].[PublicIpAddress,PrivateIpAddress]' | tr "\\t" "," >> agents.txt
 
 sleep 30

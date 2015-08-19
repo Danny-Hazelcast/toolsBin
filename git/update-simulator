@@ -6,7 +6,7 @@ version=$(mvn -f "${SIMULATOR_ROOT}/pom.xml" org.apache.maven.plugins:maven-help
 
 rm -fr $SIMULATOR_HOME
 unzip  -q ${SIMULATOR_ROOT}/dist/target/hazelcast-simulator-${version}-dist.zip -d $HOME
-mv hazelcast-simulator-${version} ${SIMULATOR_HOME}
+mv ~/hazelcast-simulator-${version} ${SIMULATOR_HOME}
 
 
 

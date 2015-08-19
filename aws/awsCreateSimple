@@ -1,6 +1,5 @@
 boxCount=${1:-1}
 keyName=${2:-defaultKey}
-tagName=${3:-""}
 
 simFile=${4:-simulator.properties}
 agentFile=${5:-agents.txt}
@@ -31,7 +30,7 @@ if ((${rc} != 0)) ; then
   exit $boxCount
 fi
 
-ec2-create-tags $ids --tag "Name=${tagName}-${keyName}"
+ec2-create-tags $ids --tag "Name=$(pwd)"
 aws ec2 describe-instances --instance-ids ${ids}  --output text --query 'Reservations[*].Instances[*].[PublicIpAddress,PrivateIpAddress]' | tr "\\t" "," >> agents.txt
 
 sleep 30

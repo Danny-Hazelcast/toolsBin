@@ -51,7 +51,7 @@ initCmdArgs () {
 }
 
 updateRepos () {
- update-stabilizer
+ update-simulator
  update-hazelcast "${checkoutTarget}"
       
  if [ "$ee" == "true" ]; then 
