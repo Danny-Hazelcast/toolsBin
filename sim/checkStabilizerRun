@@ -4,3 +4,5 @@ DEFAULT_FILENAME=nohup*
 target=${1:-$DEFAULT_FILENAME}
 
 find . -name "${target}" | xargs -I % sh -c 'echo %; cat % | grep -i "Provisioning\|provisioned\|Finished terminating\|Failure #1 \|failures have been detected"; tail -n 1 %; echo"" '
+
+lookForErrors
