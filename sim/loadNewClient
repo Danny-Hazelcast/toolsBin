@@ -1,0 +1,7 @@
+sshAll 'rm hazelcast-simulator-0.6-SNAPSHOT/lib/hazelcast-client-*.jar'
+
+version=$(getHazelcastVersion)
+
+forIpsIn agents.txt scpUp ~/.m2/repository/com/hazelcast/hazelcast-client-new/${version}/hazelcast-client-new-${version}.jar hazelcast-simulator-0.6-SNAPSHOT/lib
+
+sshAll "cd hazelcast-simulator-0.6-SNAPSHOT/lib; mv hazelcast-client-new-${version}.jar hazelcast-client-${version}.jar"
