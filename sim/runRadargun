@@ -105,6 +105,21 @@ setupHz () {
  forIpsIn agents.txt scpUp ${hzJar} RadarGun-bin/plugins/hazelcastMaster/lib
 }
 
+setupInfin () {
+
+ cp ~/radargun/plugins/infinispan70/src/main/resources/dist-sync.xml .
+ forIpsIn agents.txt scpUp dist-sync.xml RadarGun-bin/plugins/infinispan72/conf
+ forIpsIn agents.txt scpUp dist-sync.xml RadarGun-bin/plugins/infinispanMaster/conf
+
+ cp ~/radargun/plugins/infinispan70/src/main/resources/jgroups-tcp.xml .
+
+ ips=$(forPrivateIpsIn agents.txt echoInfinAddress)
+ sed -i s/'${ipList}'/"${ips}"/g jgroups-tcp.xml
+ 
+ forIpsIn agents.txt scpUp jgroups-tcp.xml RadarGun-bin/plugins/infinispan72/conf
+ forIpsIn agents.txt scpUp jgroups-tcp.xml RadarGun-bin/plugins/infinispanMaster/conf
+}
+
 runBench () {
  benchXml=$1
  output=$2
@@ -134,6 +149,7 @@ main () {
 
  setupHz
  setupCohearance
+ setupInfin
  
  runAllBench
 }

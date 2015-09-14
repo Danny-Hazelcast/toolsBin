@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+ip=$1
+echo -n "${ip}[7800],"

@@ -13,7 +13,7 @@ oom=$(find . -name *.oom)
 [ -n "${oom}" ] && echo FAIL! ${oom}
 
 
-if [ -n "${hprof}" ] || [ -n "${hs_err}" ] || [ -n "${failures}" ] || [ -n "${core}" ] || [ -n "${core}" ]; then
+if [ -n "${hprof}" ] || [ -n "${hs_err}" ] || [ -n "${failures}" ] || [ -n "${core}" ] || [ -n "${oom}" ]; then
    exit 1
 fi
 

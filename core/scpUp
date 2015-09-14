@@ -11,5 +11,6 @@ if [ -n "${simUser}" ] ; then
  user=${simUser}
 fi
 
+echo "scp -r ${from} ${user}@${ip}:${to}"
 
 scp -r $from ${user}@$ip:$to

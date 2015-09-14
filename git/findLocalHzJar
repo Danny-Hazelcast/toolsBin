@@ -1,0 +1,9 @@
+version=$1
+
+
+if [[ -n $(find ~/.m2 -name hazelcast-${version}.jar) ]] ; then
+  exit 0
+fi
+
+exit 1
+

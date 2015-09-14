@@ -87,7 +87,7 @@ setSimulatorProps () {
 
 provisionBoxes () {
  awsCreate ${boxCount} jenkins-ec2-key
- provisioner --enterpriseEnabled ${ee} --restart
+ provisioner --enterpriseEnabled ${ee} --install
  provisioner --clean
 }
 

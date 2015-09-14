@@ -11,6 +11,7 @@ hzTag=""
 
 cleanup() {
     provisioner --terminate
+    echo "end"
 }
 
 trap "cleanup" INT TERM EXIT
@@ -34,23 +35,24 @@ initCmdArgs () {
 }
 
 initBoxes () {
- sshAll 'wget http://mirrors.gigenet.com/apache/maven/maven-3/3.0.5/binaries/apache-maven-3.0.5-bin.tar.gz' ec2-user
- sshAll 'tar -zxvf apache-maven-3.0.5-bin.tar.gz' ec2-user
+ #sshAll 'wget http://mirrors.gigenet.com/apache/maven/maven-3/3.0.5/binaries/apache-maven-3.0.5-bin.tar.gz' ec2-user
+ #sshAll 'tar -zxvf apache-maven-3.0.5-bin.tar.gz' ec2-user
 
- sshAll 'sudo yum install -y git' ec2-user
- sshAll 'git clone https://github.com/Danny-Hazelcast/yardstick-hazelcast.git' ec2-user
- sshAll 'git clone https://github.com/Danny-Hazelcast/yardstick-ignite.git' ec2-user
+ #sshAll 'sudo yum install -y git' ec2-user
+ #sshAll 'git clone https://github.com/Danny-Hazelcast/yardstick-hazelcast.git' ec2-user
+ #sshAll 'git clone https://github.com/Danny-Hazelcast/yardstick-ignite.git' ec2-user
 
- forIpsIn agents.txt scpUp ~/temp-config/.bashrc . ec2-user
+ #forIpsIn agents.txt scpUp ~/temp-config/.bashrc . ec2-user
 
- sshAll 'cd yardstick-hazelcast; git checkout parity; git pull; mvn clean install -DskipTests' ec2-user
- sshAll 'cd yardstick-ignite; git checkout parity; git pull; mvn clean install -DskipTests' ec2-user
+ sshAll 'cd yardstick-hazelcast; git checkout -- .; git checkout parity; git pull; mvn clean install -DskipTests' ec2-user
+ 
+ sshAll 'cd yardstick-ignite; git checkout -- .; git checkout parity; git pull; mvn clean install -DskipTests' ec2-user
 
- forIpsIn agents.txt scpUp ~/.ssh/jenkins-ec2.pem .ssh/ ec2-user
- sshAll 'chmod 600 ~/.ssh/jenkins-ec2.pem' ec2-user
- forIpsIn agents.txt scpUp ~/.ssh/config .ssh/ ec2-user
- sshAll 'chmod 600 ~/.ssh/config' ec2-user
-} 
+ #forIpsIn agents.txt scpUp ~/.ssh/jenkins-ec2.pem .ssh/ ec2-user
+ #sshAll 'chmod 600 ~/.ssh/jenkins-ec2.pem' ec2-user
+ #forIpsIn agents.txt scpUp ~/.ssh/config .ssh/ ec2-user
+ #sshAll 'chmod 600 ~/.ssh/config' ec2-user
+}
 
 setLatestIgnite () { 
  update-ignite
@@ -68,15 +70,15 @@ setLatestIgnite () {
 }
 
 setLatestHazelcast () {
- update-hazelcast "${1}"
+ update-hazelcast "${1}" build
  version=$(getHazelcastVersion)
  
  sshAll 'rm yardstick-hazelcast/libs/hazelcast-*.jar' ec2-user
 
  forIpsIn agents.txt scpUp $(find ~/.m2 -name hazelcast-${version}.jar) yardstick-hazelcast/libs ec2-user
- forIpsIn agents.txt scpUp $(find ~/.m2 -name hazelcast-all-${version}.jar) yardstick-hazelcast/libs ec2-user
+ #forIpsIn agents.txt scpUp $(find ~/.m2 -name hazelcast-all-${version}.jar) yardstick-hazelcast/libs ec2-user
  forIpsIn agents.txt scpUp $(find ~/.m2 -name hazelcast-client-${version}.jar) yardstick-hazelcast/libs ec2-user
- forIpsIn agents.txt scpUp $(find ~/.m2 -name hazelcast-code-generator-${version}.jar) yardstick-hazelcast/libs ec2-user
+ #forIpsIn agents.txt scpUp $(find ~/.m2 -name hazelcast-code-generator-${version}.jar) yardstick-hazelcast/libs ec2-user
 }
 
 initSimulatorProperties () {
@@ -144,13 +146,31 @@ runHazelcastVsIgnite () {
 }
 
 runHazelcastVsHazelcast () {
- setLatestHazelcast master
+ setLatestHazelcast master 
  runYardstickHz
 
  setLatestHazelcast ${hzTag}
  runYardstickHz 
 
  compairResults
+}
+
+checkPerfRegresion () {
+ for f in $(find . -name Results.html); do
+
+  new=$(xidel -e '//html/body/div/div[1]/div[2]/div/div[1]/table/tbody/tr[1]/td[2]' ${f} | tr -d ",")
+  old=$(xidel -e '//html/body/div/div[1]/div[2]/div/div[1]/table/tbody/tr[2]/td[2]' ${f} | tr -d ",")
+
+  if (( $(bc <<< "$old > $new") == 1 )) ; then
+   echo "old $old > new $new"
+
+   there=$(echo $f | tr -d ".")
+   there=${f:1}
+   hear=$(pwd | grep -oh workspace.*)
+
+   slackPost benchmark-regression WARN \<http://54.87.52.100/~jenkins/${hear}${there}\>
+  fi
+ done
 }
 
 output="$(date '+%Y_%m_%d-%H_%M_%S')"
@@ -170,6 +190,7 @@ to=$((servers+1))
 from=$((drivers+1))
 driverIps=$(forPrivateIpsIn agents.txt echo | sed -n ${to},${from}p | linesByComma)
 
+
 mkdir -p hazelcastMaster-Vs-IgniteMaster
 cp agents.txt hazelcastMaster-Vs-IgniteMaster &> /dev/null
 cd hazelcastMaster-Vs-IgniteMaster
@@ -180,4 +201,5 @@ mkdir -p hazelcastMaster-Vs-hazelcast-${hzTag}
 cp agents.txt hazelcastMaster-Vs-hazelcast-${hzTag} &> /dev/null
 cd hazelcastMaster-Vs-hazelcast-${hzTag}
 runHazelcastVsHazelcast
+checkPerfRegresion
 cd ..

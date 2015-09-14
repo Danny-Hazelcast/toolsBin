@@ -2,11 +2,10 @@ boxCount=${1:-1}
 keyName=${2:-defaultKey}
 
 subnet=${3:-subnet-378d2140}
-placeGorup=${4:-hzpc2}
+placeGroup=${4:-hzpc2}
 
 simFile=${5:-simulator.properties}
 agentFile=${6:-agents.txt}
-
 
 currentBoxCount=$(cat ${agentFile} 2>/dev/null | wc -l)
 
@@ -24,9 +23,9 @@ echo $hardwareId
 echo $locationId
 echo $ami
 echo $subnet
-echo $placeGorup
+echo $placeGroup
 
-ids=$(aws ec2 run-instances --image-id ${ami} --region ${locationId} --instance-type ${hardwareId} --placement GroupName=${placeGorup} --subnet-id ${subnet} --key ${keyName} --count ${boxCount} --output text --query 'Instances[*].InstanceId')
+ids=$(aws ec2 run-instances --image-id ${ami} --region ${locationId} --instance-type ${hardwareId} --placement GroupName=${placeGroup} --subnet-id ${subnet} --key ${keyName} --count ${boxCount} --output text --query 'Instances[*].InstanceId')
 rc=$?
 
 if ((${rc} != 0)) ; then
