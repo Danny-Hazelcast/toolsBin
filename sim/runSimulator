@@ -26,9 +26,10 @@ duration=1h
 ee=false
 machienSpec=""
 testDir=""
-checkoutTarget="master"
+hazelcastVersion="master"
+simulatorVersion='master'
 
-OPTS=`getopt -o : --long  boxCount:,memberBox:,members:,clients:,duration:,ee:,machienSpec:,testDir:,checkout: -n 'parse-options' -- "$@"` || { echo "Failed parsing options." >&2 ; exit 1; }
+OPTS=`getopt -o : --long  boxCount:,memberBox:,members:,clients:,duration:,ee:,machienSpec:,testDir:,hazelcastVersion:,simulatorVersion: -n 'parse-options' -- "$@"` || { echo "Failed parsing options." >&2 ; exit 1; }
 
 initCmdArgs () { 
  eval set -- "$OPTS"
@@ -43,7 +44,8 @@ initCmdArgs () {
     --duration ) duration="$2"; shift 2  ;;
     --machienSpec ) machienSpec="$2"; shift 2  ;;
     --testDir ) testDir="$2"; shift 2  ;;
-    --checkout ) checkoutTarget="$2"; shift 2  ;;
+    --hazelcastVersion ) hazelcastVersion="$2"; shift 2  ;;
+    --simulatorVersion ) simulatorVersion="$2"; shift 2  ;;
     -- ) shift; break ;;
     * ) break ;;
   esac
@@ -51,11 +53,11 @@ initCmdArgs () {
 }
 
 updateRepos () {
- update-simulator
- update-hazelcast "${checkoutTarget}"
+ update-simulator "${simulatorVersion}"
+ update-hazelcast "${hazelcastVersion}"
       
  if [ "$ee" == "true" ]; then 
-   update-hazelcast-ee "${checkoutTarget}" build
+   update-hazelcast-ee "${hazelcastVersion}" build
  fi
 
  update-eeTests

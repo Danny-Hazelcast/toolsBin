@@ -59,7 +59,8 @@ setDirStruct () {
 updateRepos () {
  update-hazelcast ${checkoutTarget}
  hzOlderVersion=$(getHazelcastVersion)
- update-hazelcast master
+ 
+ update-hazelcast master build
  hzHatMasterVersion=$(getHazelcastVersion)  
 }
 

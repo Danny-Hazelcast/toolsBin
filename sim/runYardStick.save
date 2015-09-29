@@ -17,7 +17,7 @@ cleanup() {
 
 trap "cleanup" INT TERM EXIT
 
-OPTS=`getopt -o : --long  servers:,drivers:,subnet:,machienSpec:,hzTag:,ee: -n 'parse-options' -- "$@"`
+OPTS=`getopt -o : --long  servers:,drivers:,subnet:,machienSpec:,hzTag: -n 'parse-options' -- "$@"`
 if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
 
 initCmdArgs () { 
@@ -72,7 +72,7 @@ setLatestIgnite () {
 }
 
 setLatestHazelcast () {
- update-hazelcast "${1}"
+ update-hazelcast "${1}" build
  version=$(getHazelcastVersion)
  
  sshAll 'rm yardstick-hazelcast/libs/hazelcast-*.jar' ec2-user
@@ -106,12 +106,13 @@ setBenchMarkProps () {
   benchMarkfile=benchmark-ec2.properties
  fi
 
- sed -i "s/SERVER_HOSTS=.*/SERVER_HOSTS=${serverIps}/" ${localRepo}/config/${benchMarkfile}
- sed -i "s/DRIVER_HOSTS=.*/DRIVER_HOSTS=${driverIps}/" ${localRepo}/config/${benchMarkfile}
- sed -i 's/REMOTE_USER=.*/REMOTE_USER=ec2-user/' ${localRepo}/config/${benchMarkfile}
- sed -i "s/VER_ID=.*/VER_ID=${ver}/" ${localRepo}/config/${benchMarkfile}
+ cp ${localRepo}/config/benchmark-ec2.properties
+ sed -i "s/SERVER_HOSTS=.*/SERVER_HOSTS=${serverIps}/" ${localRepo}/config/benchmark-ec2.properties
+ sed -i "s/DRIVER_HOSTS=.*/DRIVER_HOSTS=${driverIps}/" ${localRepo}/config/benchmark-ec2.properties
+ sed -i 's/REMOTE_USER=.*/REMOTE_USER=ec2-user/' ${localRepo}/config/benchmark-ec2.properties 
+ sed -i "s/VER_ID=.*/VER_ID=${ver}/" ${localRepo}/config/benchmark-ec2.properties
 
- forIpsIn agents.txt scpUp ${localRepo}/config/${benchMarkfile} ${remoteRepo}/config/ ec2-user
+ forIpsIn agents.txt scpUp ${localRepo}/config/benchmark-ec2.properties ${remoteRepo}/config/ ec2-user
 } 
 
 collectResults () {
@@ -126,21 +127,10 @@ collectResults () {
 runYardstickHz () {
  setBenchMarkProps ${YARD_HZ} yardstick-hazelcast ${version}
 
- hzXmlFile=""
- benchMarkfile=""
- if [ "$ee" == "true" ]; then
-  hzXmlFile=hazelcast-ec2-hd.xml
-  benchMarkfile=benchmark-ec2-hd.properties
- else
-  hzXmlFile=hazelcast-ec2.xml
-  benchMarkfile=benchmark-ec2.properties
- fi
-
- cp ${YARD_HZ}/config/${hzXmlFile} .
- initHzMembersXml agents.txt ${hzXmlFile}
- initHzKeyXml ${hzXmlFile}
- forIpsIn agents.txt scpUp ${hzXmlFile} yardstick-hazelcast/config/ ec2-user
- forIpAt 1 agents.txt sshCmd "cd  yardstick-hazelcast/bin; ./benchmark-run-all.sh ../config/${benchMarkfile}" ec2-user
+ cp ~/configuration/hazelcast-ec2.xml .
+ initHzMembersXml agents.txt hazelcast-ec2.xml
+ forIpsIn agents.txt scpUp hazelcast-ec2.xml yardstick-hazelcast/config/ ec2-user
+ forIpAt 1 agents.txt sshCmd 'cd  yardstick-hazelcast/bin; ./benchmark-run-all.sh ../config/benchmark-ec2.properties' ec2-user
 
  collectResults yardstick-hazelcast
 }
@@ -148,21 +138,8 @@ runYardstickHz () {
 runYardstickIg () {
  setBenchMarkProps ${YARD_IG} yardstick-ignite ${version}
 
- xmlFile=""
- benchMarkfile=""
- if [ "$ee" == "true" ]; then
-  xmlFile=ignite-ec2-hd-config.xml
-  benchMarkfile=benchmark-ec2-hd.properties
- else
-  xmlFile=ignite-ec2-config.xml
-  benchMarkfile=benchmark-ec2.properties
- fi
-
- cp ${YARD_IG}/config/${xmlFile} .
- initIgMemberValauesXml agents.txt ${xmlFile}
-
- forIpsIn agents.txt scpUp ${xmlFile} yardstick-ignite/config/ ec2-user
- forIpAt 1 agents.txt sshCmd "cd  yardstick-ignite/bin; ./benchmark-run-all.sh ../config/${xmlFile}" ec2-user
+ forIpsIn agents.txt scpUp ~/configuration/ignite-ec2-config.xml yardstick-ignite/config/ ec2-user
+ forIpAt 1 agents.txt sshCmd 'cd  yardstick-ignite/bin; ./benchmark-run-all.sh ../config/benchmark-ec2.properties' ec2-user
 
  collectResults	yardstick-ignite
 }
@@ -234,9 +211,9 @@ cd hazelcastMaster-Vs-IgniteMaster
 runHazelcastVsIgnite
 cd ..
 
-#mkdir -p hazelcastMaster-Vs-hazelcast-${hzTag}
-#cp agents.txt hazelcastMaster-Vs-hazelcast-${hzTag} &> /dev/null
-#cd hazelcastMaster-Vs-hazelcast-${hzTag}
-#runHazelcastVsHazelcast
-#checkPerfRegresion
-#cd ..
+mkdir -p hazelcastMaster-Vs-hazelcast-${hzTag}
+cp agents.txt hazelcastMaster-Vs-hazelcast-${hzTag} &> /dev/null
+cd hazelcastMaster-Vs-hazelcast-${hzTag}
+runHazelcastVsHazelcast
+checkPerfRegresion
+cd ..

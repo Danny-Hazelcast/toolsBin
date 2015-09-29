@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+hzxml=${1:-hazelcast.xml}
+
+keyXml="<license-key>"${HAZELCAST_EE_KEY}"<\/license-key>"
+sed -i s/'<!--license-key-->'/${keyXml}/g ${hzxml}

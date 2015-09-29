@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+agents=${1:-agents.txt}
+xml=${2:-ignite-ec2-config.xml}
+
+
+membersXml=$(forPrivateIpsIn ${agents} echoValueIpXml)
+sed -i s/'<!--MEMBERS-->'/${membersXml}/g ${xml}
