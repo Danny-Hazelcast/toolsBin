@@ -4,6 +4,7 @@ FILE_PATTERN=$1
 idx=$2
 title=$3
 yAxisTitle=$4
+keyState=${5:-on}
 
 files=$(find . -name ${FILE_PATTERN} | xargs -n1 -I% echo -n " \"%\" using 1:$idx with lines,")
 #files=$(find . -name ${FILE_PATTERN} | xargs -n1 -I% echo -n " \"%\" using $idx with lines,")
@@ -25,6 +26,8 @@ set title "${title}"
 
 set terminal png enhanced size 1280,1024
 set output "${title}-${yAxisTitle}.png"
+
+set key ${keyState}
 set key left top
 plot $files
 

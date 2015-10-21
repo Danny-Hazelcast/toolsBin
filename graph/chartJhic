@@ -1,8 +1,8 @@
 plotJhic *jhic-max.txt 2 jhic-max-all 'milliseconds-latency'
 plotJhic *jhicControl-max.txt 2 jhicControl-max-all 'milliseconds-latency'
 
-plotJhic *server/jhic-max.txt 2 jhic-max-server 'milliseconds-latency'
-plotJhic *server/jhicControl-max.txt 2 jhicControl-max-server 'milliseconds-latency'
+plotJhic *member/jhic-max.txt 2 jhic-max-server 'milliseconds-latency'
+plotJhic *member/jhicControl-max.txt 2 jhicControl-max-server 'milliseconds-latency'
 
 plotJhic *client/jhic-max.txt 2 jhic-max-client 'milliseconds-latency'
 plotJhic *client/jhicControl-max.txt 2 jhicControl-max-client 'milliseconds-latency'

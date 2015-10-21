@@ -1,4 +1,17 @@
 #!/bin/sh
 
+set -e
+
 update-repo "${HAZELCAST_EE_HOME}" $1 $2
+
+
+#res=$(update-hazelcast $1 $2)
+#echo "$repo $res"
+
+
+#if [[ $res == *"BUILD SUCCESS"* ]] ; then
+# update-repo "${HAZELCAST_EE_HOME}" "${1}" build
+#else
+# update-repo "${HAZELCAST_EE_HOME}" $1 $2
+#fi
 

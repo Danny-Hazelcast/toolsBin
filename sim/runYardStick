@@ -10,8 +10,10 @@ version=""
 hzTag=""
 ee=""
 
+remoteUser='ec2-user'
+
 cleanup() {
-#    provisioner --terminate
+    provisioner --terminate
     echo "end"
 }
 
@@ -20,7 +22,7 @@ trap "cleanup" INT TERM EXIT
 OPTS=`getopt -o : --long  servers:,drivers:,subnet:,machienSpec:,hzTag:,ee: -n 'parse-options' -- "$@"`
 if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
 
-initCmdArgs () { 
+initCmdArgs () {
  eval set -- "$OPTS"
 
  while true; do
@@ -37,27 +39,26 @@ initCmdArgs () {
 }
 
 initBoxes () {
- #sshAll 'wget http://mirrors.gigenet.com/apache/maven/maven-3/3.0.5/binaries/apache-maven-3.0.5-bin.tar.gz' ec2-user
- #sshAll 'tar -zxvf apache-maven-3.0.5-bin.tar.gz' ec2-user
+ #sshAll 'wget http://mirrors.gigenet.com/apache/maven/maven-3/3.0.5/binaries/apache-maven-3.0.5-bin.tar.gz'
+ #sshAll 'tar -zxvf apache-maven-3.0.5-bin.tar.gz'
 
- #sshAll 'sudo yum install -y git' ec2-user
- #sshAll 'git clone https://github.com/Danny-Hazelcast/yardstick-hazelcast.git' ec2-user
- #sshAll 'git clone https://github.com/Danny-Hazelcast/yardstick-ignite.git' ec2-user
+ #sshAll 'sudo yum install -y git'
+ #sshAll 'git clone https://github.com/Danny-Hazelcast/yardstick-hazelcast.git'
+ #sshAll 'git clone https://github.com/Danny-Hazelcast/yardstick-ignite.git'
 
- #forIpsIn agents.txt scpUp ~/temp-config/.bashrc . ec2-user
+ #forIpsIn agents.txt scpUp ~/temp-config/.bashrc .
 
- sshAll 'cd yardstick-hazelcast; git checkout -- .; git checkout parity; git pull; mvn clean install -DskipTests' ec2-user
- 
- sshAll 'cd yardstick-ignite; git checkout -- .; git checkout parity; git pull; mvn clean install -DskipTests' ec2-user
+ sshAll 'cd yardstick-hazelcast; git checkout -- .; git checkout master; git pull; mvn clean install -DskipTests'
+ sshAll 'cd yardstick-ignite; git checkout -- .; git checkout master; git pull; mvn clean install -DskipTests'
 
- #forIpsIn agents.txt scpUp ~/.ssh/jenkins-ec2.pem .ssh/ ec2-user
- #sshAll 'chmod 600 ~/.ssh/jenkins-ec2.pem' ec2-user
- #forIpsIn agents.txt scpUp ~/.ssh/config .ssh/ ec2-user
- #sshAll 'chmod 600 ~/.ssh/config' ec2-user
+ #forIpsIn agents.txt scpUp ~/.ssh/jenkins-ec2.pem .ssh/
+ #sshAll 'chmod 600 ~/.ssh/jenkins-ec2.pem'
+ #forIpsIn agents.txt scpUp ~/.ssh/config .ssh/
+ #sshAll 'chmod 600 ~/.ssh/config'
 }
 
-setLatestIgnite () { 
- update-ignite
+setLatestIgnite () {
+ #update-ignite 
  version=$(getIgniteVersion)
 
  sshAll 'rm yardstick-ignite/libs/ignite-aws*' ec2-user
@@ -72,10 +73,10 @@ setLatestIgnite () {
 }
 
 setLatestHazelcast () {
- update-hazelcast "${1}"
- version=$(getHazelcastVersion)
- 
  sshAll 'rm yardstick-hazelcast/libs/hazelcast-*.jar' ec2-user
+
+ update-hazelcast "${1}" build
+ version=$(getHazelcastVersion)
 
  if [ "$ee" == "true" ]; then
    update-hazelcast-ee "${1}" build
@@ -91,7 +92,7 @@ initSimulatorProperties () {
  cp ~/configuration/simulator.properties .
  if [ -n "${machienSpec}" ]; then
   sed -i "s|MACHINE_SPEC=.*|MACHINE_SPEC=${machienSpec}|" simulator.properties
- fi  
+ fi
 }
 
 setBenchMarkProps () {
@@ -108,11 +109,11 @@ setBenchMarkProps () {
 
  sed -i "s/SERVER_HOSTS=.*/SERVER_HOSTS=${serverIps}/" ${localRepo}/config/${benchMarkfile}
  sed -i "s/DRIVER_HOSTS=.*/DRIVER_HOSTS=${driverIps}/" ${localRepo}/config/${benchMarkfile}
- sed -i 's/REMOTE_USER=.*/REMOTE_USER=ec2-user/' ${localRepo}/config/${benchMarkfile}
+ sed -i "s/REMOTE_USER=.*/REMOTE_USER=${remoteUser}/" ${localRepo}/config/${benchMarkfile}
  sed -i "s/VER_ID=.*/VER_ID=${ver}/" ${localRepo}/config/${benchMarkfile}
 
  forIpsIn agents.txt scpUp ${localRepo}/config/${benchMarkfile} ${remoteRepo}/config/ ec2-user
-} 
+}
 
 collectResults () {
  remoteRepo=$1
@@ -140,35 +141,34 @@ runYardstickHz () {
  initHzMembersXml agents.txt ${hzXmlFile}
  initHzKeyXml ${hzXmlFile}
  forIpsIn agents.txt scpUp ${hzXmlFile} yardstick-hazelcast/config/ ec2-user
- forIpAt 1 agents.txt sshCmd "cd  yardstick-hazelcast/bin; ./benchmark-run-all.sh ../config/${benchMarkfile}" ec2-user
 
+ forIpAt 1 agents.txt sshCmd "cd  yardstick-hazelcast/bin; ./benchmark-run-all.sh ../config/${benchMarkfile}" ec2-user
  collectResults yardstick-hazelcast
 }
 
 runYardstickIg () {
  setBenchMarkProps ${YARD_IG} yardstick-ignite ${version}
 
- xmlFile=""
  benchMarkfile=""
  if [ "$ee" == "true" ]; then
-  xmlFile=ignite-ec2-hd-config.xml
   benchMarkfile=benchmark-ec2-hd.properties
  else
-  xmlFile=ignite-ec2-config.xml
   benchMarkfile=benchmark-ec2.properties
  fi
+
+ xmlFile=ignite-ec2-config.xml
 
  cp ${YARD_IG}/config/${xmlFile} .
  initIgMemberValauesXml agents.txt ${xmlFile}
 
- forIpsIn agents.txt scpUp ${xmlFile} yardstick-ignite/config/ ec2-user
- forIpAt 1 agents.txt sshCmd "cd  yardstick-ignite/bin; ./benchmark-run-all.sh ../config/${xmlFile}" ec2-user
+ forIpsIn agents.txt scpUp ${xmlFile} yardstick-ignite/config/
+ forIpAt 1 agents.txt sshCmd "cd  yardstick-ignite/bin; ./benchmark-run-all.sh ../config/${benchMarkfile}" ec2-user
 
  collectResults	yardstick-ignite
 }
 
 compairResults () {
- results=$(find -type d -name results-* | sort)
+ results=($(find -type d -name results-* | sort))
  $YARD_HZ/bin/jfreechart-graph-gen.sh -gm COMPARISON -i ${results[0]} ${results[1]}
 }
 
@@ -183,11 +183,11 @@ runHazelcastVsIgnite () {
 }
 
 runHazelcastVsHazelcast () {
- setLatestHazelcast master 
+ setLatestHazelcast master
  runYardstickHz
 
  setLatestHazelcast ${hzTag}
- runYardstickHz 
+ runYardstickHz
 
  compairResults
 }
@@ -230,13 +230,14 @@ driverIps=$(forPrivateIpsIn agents.txt echo | sed -n ${to},${from}p | linesByCom
 
 mkdir -p hazelcastMaster-Vs-IgniteMaster
 cp agents.txt hazelcastMaster-Vs-IgniteMaster &> /dev/null
+cp simulator.properties hazelcastMaster-Vs-IgniteMaster &> /dev/null
 cd hazelcastMaster-Vs-IgniteMaster
 runHazelcastVsIgnite
 cd ..
 
-#mkdir -p hazelcastMaster-Vs-hazelcast-${hzTag}
-#cp agents.txt hazelcastMaster-Vs-hazelcast-${hzTag} &> /dev/null
-#cd hazelcastMaster-Vs-hazelcast-${hzTag}
-#runHazelcastVsHazelcast
-#checkPerfRegresion
-#cd ..
+mkdir -p hazelcastMaster-Vs-hazelcast-${hzTag}
+cp agents.txt hazelcastMaster-Vs-hazelcast-${hzTag} &> /dev/null
+cd hazelcastMaster-Vs-hazelcast-${hzTag}
+runHazelcastVsHazelcast
+checkPerfRegresion
+cd ..

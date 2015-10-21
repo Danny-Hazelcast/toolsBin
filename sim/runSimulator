@@ -4,15 +4,13 @@ set -e
 
 cleanup() {
     exitCode=$?
-
-    provisioner --terminate || true
+#    provisioner --terminate || true
 
     hear=$(pwd | grep -oh workspace.*)
     echo http://54.87.52.100/~jenkins/${hear}
     if (( $exitCode != 0 )) ; then 
       slackPost simulator-fail FAIL \<http://54.87.52.100/~jenkins/${hear}\>
     fi
-    
     exit $exitCode
 }
 
@@ -28,8 +26,9 @@ machienSpec=""
 testDir=""
 hazelcastVersion="master"
 simulatorVersion='master'
+lab="false"
 
-OPTS=`getopt -o : --long  boxCount:,memberBox:,members:,clients:,duration:,ee:,machienSpec:,testDir:,hazelcastVersion:,simulatorVersion: -n 'parse-options' -- "$@"` || { echo "Failed parsing options." >&2 ; exit 1; }
+OPTS=`getopt -o : --long  boxCount:,memberBox:,members:,clients:,duration:,ee:,machienSpec:,testDir:,hazelcastVersion:,simulatorVersion:,lab: -n 'parse-options' -- "$@"` || { echo "Failed parsing options." >&2 ; exit 1; }
 
 initCmdArgs () { 
  eval set -- "$OPTS"
@@ -46,6 +45,7 @@ initCmdArgs () {
     --testDir ) testDir="$2"; shift 2  ;;
     --hazelcastVersion ) hazelcastVersion="$2"; shift 2  ;;
     --simulatorVersion ) simulatorVersion="$2"; shift 2  ;;
+    --lab ) lab="$2"; shift 2 ;;
     -- ) shift; break ;;
     * ) break ;;
   esac
@@ -57,7 +57,7 @@ updateRepos () {
  update-hazelcast "${hazelcastVersion}"
       
  if [ "$ee" == "true" ]; then 
-   update-hazelcast-ee "${hazelcastVersion}" build
+    update-hazelcast-ee "${hazelcastVersion}" build
  fi
 
  update-eeTests
@@ -79,6 +79,10 @@ setSimulatorProps () {
    cp -fr $SIM_EE_TEST_DIR/${testDir}/. .
  fi
 
+ if [ "$lab" == "true" ]; then
+   cp -fr ~/hz-lab/. .
+ fi 
+
  hzVersion=$(getHazelcastVersion)
  sed -i s/maven=.*/maven="${hzVersion}"/ simulator.properties
 
@@ -88,6 +92,7 @@ setSimulatorProps () {
 }
 
 provisionBoxes () {
+ pwd
  awsCreate ${boxCount} jenkins-ec2-key
  provisioner --enterpriseEnabled ${ee} --install
  provisioner --clean
@@ -99,7 +104,12 @@ mainFunction () {
  setDirStruct
  setSimulatorProps
  provisionBoxes
- ./run ${boxCount} ${memberBox} ${members} ${clients} ${duration} || exitCode=$?
+
+ java -version
+
+ #./run ${boxCount} ${memberBox} ${members} ${clients} ${duration} || exitCode=$?
+ ./run ${boxCount} ${memberBox} ${members} ${clients} ${duration} | tee sim-output.out  ||  exitCode=${PIPESTATUS[0]}
+
  lookForErrors
  exit $exitCode
 }

@@ -1,0 +1,7 @@
+
+update-hazelcast hot-restart-integration build
+
+update-hazelcast-ee hot-restart-integration build
+
+find ~/.m2 -name hazelcast-enterprise-hotrestart-3.6-SNAPSHOT.jar | xargs -I file cp file ~/hazelcast-simulator-bin/user-lib/
+

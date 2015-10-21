@@ -26,7 +26,7 @@ for ip in "${lines[@]}" ; do
      break
    fi
 
-   sleep 10
+   sleep 15
  done
 
 done

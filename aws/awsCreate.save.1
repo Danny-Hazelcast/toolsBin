@@ -49,5 +49,5 @@ ec2-create-tags $ids --tag "Name=$(pwd)"
 aws ec2 describe-instances --instance-ids ${ids}  --output text --query 'Reservations[*].Instances[*].[PublicIpAddress,PrivateIpAddress]' | tr "\\t" "," >> agents.txt
 
 sleep 90
-awsRemoveBadBoxes ec2-user agents.txt
+awsRemoveBadBoxes ec2-user agents.txt "${ids}"
 

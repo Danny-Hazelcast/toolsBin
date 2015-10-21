@@ -1,3 +1,7 @@
 #!/bin/sh
 
+set -e
+
 update-repo "${HAZELCAST_HOME}" $1 $2
+
+mvn -f "${HAZELCAST_HOME}/hazelcast-all/pom.xml" clean install -DskipTests

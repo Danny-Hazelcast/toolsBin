@@ -3,7 +3,7 @@
 filePattern=$1
 title=$2
 ytitle=$3
-
+keyState=${4:-on}
 
 #  1     2     3       4            5                 6                   7                8        9        10            11     12            13
 #Date, Ticks, Count, Mean-Rate, One-Minute-Rate, Five-Minute-Rate, Fifteen-Minute-Rate, Rate-Unit, Last, Last-User-Value, Min, Min-User-Value, Max,
@@ -16,19 +16,19 @@ ytitle=$3
 
 
 
-plotMetrics ${filePattern} 2 ${title} count
-plotMetrics ${filePattern} 13 ${title} mean-rate
-plotMetrics ${filePattern} 14 ${title} 1min-rate
-plotMetrics ${filePattern} 15 ${title} 5min-rate
-plotMetrics ${filePattern} 16 ${title} 15min-rate
+plotMetrics ${filePattern} 2 ${title} count ${keyState}
+plotMetrics ${filePattern} 13 ${title} mean-rate ${keyState}
+plotMetrics ${filePattern} 14 ${title} 1min-rate ${keyState}
+plotMetrics ${filePattern} 15 ${title} 5min-rate ${keyState}
+plotMetrics ${filePattern} 16 ${title} 15min-rate ${keyState}
 
-plotMetrics ${filePattern} 5 ${title} min-latency
-plotMetrics ${filePattern} 3 ${title} max-latency
-plotMetrics ${filePattern} 4 ${title} mean-latency
-plotMetrics ${filePattern} 6 ${title} stdDev-latency
+plotMetrics ${filePattern} 5 ${title} min-latency ${keyState}
+plotMetrics ${filePattern} 3 ${title} max-latency ${keyState}
+plotMetrics ${filePattern} 4 ${title} mean-latency ${keyState}
+plotMetrics ${filePattern} 6 ${title} stdDev-latency ${keyState}
 
-plotMetrics ${filePattern} 8 ${title} 75-latency-percentile
-plotMetrics ${filePattern} 9 ${title} 95-latency-percentile
-plotMetrics ${filePattern} 10 ${title} 98-latency-percentile
-plotMetrics ${filePattern} 11 ${title} 99-latency-percentile
-plotMetrics ${filePattern} 12 ${title} 999-latency-percentile
+plotMetrics ${filePattern} 8 ${title} 75-latency-percentile ${keyState}
+plotMetrics ${filePattern} 9 ${title} 95-latency-percentile ${keyState}
+plotMetrics ${filePattern} 10 ${title} 98-latency-percentile ${keyState}
+plotMetrics ${filePattern} 11 ${title} 99-latency-percentile ${keyState}
+plotMetrics ${filePattern} 12 ${title} 999-latency-percentile ${keyState}
