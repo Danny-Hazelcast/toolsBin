@@ -58,7 +58,7 @@ initBoxes () {
 }
 
 setLatestIgnite () {
- #update-ignite 
+ update-ignite 
  version=$(getIgniteVersion)
 
  sshAll 'rm yardstick-ignite/libs/ignite-aws*' ec2-user

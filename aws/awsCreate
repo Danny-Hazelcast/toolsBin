@@ -32,7 +32,7 @@ awsArgs="$awsArgs --key ${keyName} "
 awsArgs="$awsArgs --count ${boxCount} "
 
 awsArgs="$awsArgs --subnet-id ${subnet} "
-awsArgs="$awsArgs --placement GroupName=${placeGroup} "
+#awsArgs="$awsArgs --placement GroupName=${placeGroup} "
 
 awsArgs="$awsArgs --output text "
 

@@ -4,7 +4,7 @@ set -e
 
 cleanup() {
     exitCode=$?
-#    provisioner --terminate || true
+    provisioner --terminate || true
 
     hear=$(pwd | grep -oh workspace.*)
     echo http://54.87.52.100/~jenkins/${hear}
@@ -50,6 +50,7 @@ initCmdArgs () {
     * ) break ;;
   esac
  done
+
 }
 
 updateRepos () {
@@ -107,7 +108,6 @@ mainFunction () {
 
  java -version
 
- #./run ${boxCount} ${memberBox} ${members} ${clients} ${duration} || exitCode=$?
  ./run ${boxCount} ${memberBox} ${members} ${clients} ${duration} | tee sim-output.out  ||  exitCode=${PIPESTATUS[0]}
 
  lookForErrors

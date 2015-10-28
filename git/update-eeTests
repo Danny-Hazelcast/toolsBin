@@ -1,15 +1,13 @@
 #!/bin/sh
 
-set -e
+#set -e
 
 moveJars () {
+ cp ${SIM_EE_TEST_HOME}/ee-tests/target/*.jar ${SIMULATOR_HOME}/user-lib/
 
- cp $SIM_EE_TEST_HOME/ee-tests/target/*.jar  $SIMULATOR_HOME/user-lib/
-
- find ~ -name metrics-core-3.1.0.jar | xargs -I% cp % $SIMULATOR_HOME/user-lib
- find ~ -name slf4j-api-1.7.9.jar | xargs -I% cp % $SIMULATOR_HOME/user-lib
- find ~ -name slf4j-simple-1.7.9.jar | xargs -I% cp % $SIMULATOR_HOME/user-lib
-
+ find ~/.m2 -name metrics-core-3.1.0.jar | xargs -I% cp % ${SIMULATOR_HOME}/user-lib
+ find ~/.m2 -name slf4j-api-1.7.9.jar | xargs -I% cp % ${SIMULATOR_HOME}/user-lib
+ find ~/.m2 -name slf4j-simple-1.7.9.jar | xargs -I% cp % ${SIMULATOR_HOME}/user-lib
 }
 
 update-repo "${SIM_EE_TEST_HOME}" $1 $2

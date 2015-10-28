@@ -20,7 +20,7 @@ plotGcTimeSeries *member/fullGc-PSPermGenAfter.txt 2 server-fullGc-PSPermGenAfte
 plotGcTimeSeries *member/fullGc-PSPermGenCapacity.txt 2 server-fullGc-PSPermGenCapacity 'K'
 
 plotSpaceDelimHist member-fullGcCount.txt 2 server-fullGc 'count'
-plotSpaceDelimHist client-fullGcCount.txt 2 client-fullGc 'count'
+plotSpaceDelimHist client-fullGcCount.txt 2 driver-fullGc 'count'
 
 #plotGcTimeSeries *client/fullGcUserTime.txt 2 client-fullgc-user-time 'jvm-pause-seconds'
 #plotGcTimeSeries *client/stwSeconds.txt 2 client-stw-seconds 'jvm-pause-seconds'

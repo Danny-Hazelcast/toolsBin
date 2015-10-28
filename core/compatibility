@@ -1,0 +1,23 @@
+
+#japi-compliance-checker OLD.jar NEW.jar
+
+old=$1
+new=$2
+
+oldjar=$(find ~/.m2 -name hazelcast-all-$old.jar)
+echo $oldjar
+
+newjar=$(find ~/.m2 -name hazelcast-all-$new.jar)
+echo $newjar
+
+japi-compliance-checker $oldjar $newjar
+
+
+
+oldjar=$(find ~/.m2 -name hazelcast-enterprise-all-$old.jar)
+echo $oldjar
+
+newjar=$(find ~/.m2 -name hazelcast-enterprise-all-$new.jar)
+echo $newjar
+
+japi-compliance-checker $oldjar $newjar

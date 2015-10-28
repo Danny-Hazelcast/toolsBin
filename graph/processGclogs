@@ -40,14 +40,6 @@ for logFile in $gclogs ; do
 
 done
 
-gclogs=$(find . -wholename *server/fullGcCount.txt)
 
-for logFile in $gclogs ; do
- cat ${logFile}	>> member-fullGcCount.txt
-done
-
-gclogs=$(find . -wholename *client/fullGcCount.txt)
-
-for logFile in $gclogs ; do
- cat ${logFile} >> client-fullGcCount.txt
-done
+ls *member/fullGcCount.txt | xargs -L 1 -I file cat file >> member-fullGcCount.txt
+ls *client/fullGcCount.txt | xargs -L 1 -I file cat file >> client-fullGcCount.txt

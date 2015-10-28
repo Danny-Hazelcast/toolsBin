@@ -1,0 +1,12 @@
+
+log=worker.log
+
+
+find . -name $log | grep member | xargs -L 1 -I file sh -c 'echo file; cat file | grep "Members "' > member-clusterSize-history.txt
+find . -name $log | grep client | xargs -L 1 -I file sh -c 'echo file; cat file | grep "Members "' > client-clusterSize-history.txt
+
+find . -name $log | grep member | xargs -L 1 -I file sh -c 'echo file; cat file | grep WARN | tee member-warn.txt | grep -ohP com.*?: | sort | uniq' > member-uniq-warn.txt
+find . -name $log | grep member | xargs -L 1 -I file sh -c 'echo file; cat file | grep FATAL | tee member-fatal.txt | grep -ohP com.*?: | sort | uniq' > member-uniq-fatal.txt
+
+find . -name $log | grep client | xargs -L 1 -I file sh -c 'echo file; cat file | grep WARN | tee client-warn.txt | grep -ohP com.*?: | sort | uniq' > client-uniq-warn.txt
+find . -name $log | grep client | xargs -L 1 -I file sh -c 'echo file; cat file | grep FATAL | tee client-fatal.txt | grep -ohP com.*?: | sort | uniq' > client-uniq-fatal.txt

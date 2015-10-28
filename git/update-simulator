@@ -2,12 +2,12 @@
 
 update-repo "${SIMULATOR_ROOT}" $1 $2
 
-version=$(mvn -f "${SIMULATOR_ROOT}/pom.xml" org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v '\[')
+SIMULATOR_VERSION=$(grep -m 1 "<version>.*</version>" "${SIMULATOR_ROOT}/pom.xml" | awk -F'[><]' '{print $3}')
+if [ -z "${SIMULATOR_VERSION}" ]; then
+    SIMULATOR_VERSION=$(mvn -f "${SIMULATOR_ROOT}/pom.xml" org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v '\[' | grep -vi 'download')
+fi
 
-rm -fr $SIMULATOR_HOME
-unzip  -q ${SIMULATOR_ROOT}/dist/target/hazelcast-simulator-${version}-dist.zip -d $HOME
-mv ~/hazelcast-simulator-${version} ${SIMULATOR_HOME}
+rm -fr ${SIMULATOR_HOME}
+unzip -q ${SIMULATOR_ROOT}/dist/target/hazelcast-simulator-${SIMULATOR_VERSION}-dist.zip -d $HOME
 
-
-
-
+mv ${SIMULATOR_ROOT}-${SIMULATOR_VERSION} ${SIMULATOR_HOME}
