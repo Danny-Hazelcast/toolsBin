@@ -6,9 +6,11 @@ machienSpec=""
 subnet=""
 serverIps=""
 driverIps=""
-version=""
-hzTag=""
+hzTag="master"
+igTag="master"
 ee=""
+
+version=""
 
 remoteUser='ec2-user'
 
@@ -19,7 +21,7 @@ cleanup() {
 
 trap "cleanup" INT TERM EXIT
 
-OPTS=`getopt -o : --long  servers:,drivers:,subnet:,machienSpec:,hzTag:,ee: -n 'parse-options' -- "$@"`
+OPTS=`getopt -o : --long  servers:,drivers:,subnet:,machienSpec:,hzTag:,igTag:,ee: -n 'parse-options' -- "$@"`
 if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
 
 initCmdArgs () {
@@ -32,6 +34,7 @@ initCmdArgs () {
     --subnet ) subnet="$2"; shift 2 ;;
     --machienSpec ) machienSpec="$2";  shift 2 ;;
     --hzTag ) hzTag="$2"; shift 2 ;;
+    --igTag ) igTag="$2"; shift 2 ;;
     --ee ) ee="$2"; shift 2 ;;
     * ) break ;;
   esac
@@ -39,26 +42,12 @@ initCmdArgs () {
 }
 
 initBoxes () {
- #sshAll 'wget http://mirrors.gigenet.com/apache/maven/maven-3/3.0.5/binaries/apache-maven-3.0.5-bin.tar.gz'
- #sshAll 'tar -zxvf apache-maven-3.0.5-bin.tar.gz'
-
- #sshAll 'sudo yum install -y git'
- #sshAll 'git clone https://github.com/Danny-Hazelcast/yardstick-hazelcast.git'
- #sshAll 'git clone https://github.com/Danny-Hazelcast/yardstick-ignite.git'
-
- #forIpsIn agents.txt scpUp ~/temp-config/.bashrc .
-
- sshAll 'cd yardstick-hazelcast; git checkout -- .; git checkout master; git pull; mvn clean install -DskipTests'
- sshAll 'cd yardstick-ignite; git checkout -- .; git checkout master; git pull; mvn clean install -DskipTests'
-
- #forIpsIn agents.txt scpUp ~/.ssh/jenkins-ec2.pem .ssh/
- #sshAll 'chmod 600 ~/.ssh/jenkins-ec2.pem'
- #forIpsIn agents.txt scpUp ~/.ssh/config .ssh/
- #sshAll 'chmod 600 ~/.ssh/config'
+ sshAll 'cd yardstick-hazelcast; git remote update; git checkout -- .; git checkout update;  git pull; mvn clean install -DskipTests'
+ sshAll 'cd yardstick-ignite; git remote update; git checkout -- .; git checkout update2; git pull; mvn clean install -DskipTests'
 }
 
 setLatestIgnite () {
- update-ignite 
+ update-ignite "${1}" build
  version=$(getIgniteVersion)
 
  sshAll 'rm yardstick-ignite/libs/ignite-aws*' ec2-user
@@ -173,10 +162,10 @@ compairResults () {
 }
 
 runHazelcastVsIgnite () {
- setLatestHazelcast master
+ setLatestHazelcast ${hzTag}
  runYardstickHz
 
- setLatestIgnite
+ setLatestIgnite ${igTag}
  runYardstickIg
 
  compairResults
@@ -220,7 +209,7 @@ initCmdArgs
 initSimulatorProperties
 
 awsCreate $(( servers + drivers )) jenkins-ec2
-#initBoxes
+initBoxes
 
 serverIps=$(forPrivateIpsIn agents.txt echo | sed -n 1,${servers}p | linesByComma)
 to=$((servers+1))
@@ -235,9 +224,9 @@ cd hazelcastMaster-Vs-IgniteMaster
 runHazelcastVsIgnite
 cd ..
 
-mkdir -p hazelcastMaster-Vs-hazelcast-${hzTag}
-cp agents.txt hazelcastMaster-Vs-hazelcast-${hzTag} &> /dev/null
-cd hazelcastMaster-Vs-hazelcast-${hzTag}
-runHazelcastVsHazelcast
-checkPerfRegresion
-cd ..
+#mkdir -p hazelcastMaster-Vs-hazelcast-${hzTag}
+#cp agents.txt hazelcastMaster-Vs-hazelcast-${hzTag} &> /dev/null
+#cd hazelcastMaster-Vs-hazelcast-${hzTag}
+#runHazelcastVsHazelcast
+#checkPerfRegresion
+#cd ..

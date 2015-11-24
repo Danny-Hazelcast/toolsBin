@@ -50,15 +50,14 @@ initCmdArgs () {
     * ) break ;;
   esac
  done
-
 }
 
 updateRepos () {
- update-simulator "${simulatorVersion}"
- update-hazelcast "${hazelcastVersion}"
+ update-simulator ${simulatorVersion}
+ update-hazelcast ${hazelcastVersion}
       
  if [ "$ee" == "true" ]; then 
-    update-hazelcast-ee "${hazelcastVersion}" build
+    update-hazelcast-ee ${hazelcastVersion} build
  fi
 
  update-eeTests
@@ -93,9 +92,8 @@ setSimulatorProps () {
 }
 
 provisionBoxes () {
- pwd
  awsCreate ${boxCount} jenkins-ec2-key
- provisioner --enterpriseEnabled ${ee} --install
+ provisioner --install
  provisioner --clean
 }
 
@@ -106,9 +104,7 @@ mainFunction () {
  setSimulatorProps
  provisionBoxes
 
- java -version
-
- ./run ${boxCount} ${memberBox} ${members} ${clients} ${duration} | tee sim-output.out  ||  exitCode=${PIPESTATUS[0]}
+ ./run ${boxCount} ${memberBox} ${members} ${clients} ${duration} ${ee} | tee sim-output.out  ||  exitCode=${PIPESTATUS[0]}
 
  lookForErrors
  exit $exitCode

@@ -7,6 +7,7 @@ echo "version to test ${profile}"
 
 declare -a clusterProfileList=("test" "small" "medium" "large" "xlarge")
 boxCount=0
+memberBox=0
 members=0
 clients=0
 
@@ -45,11 +46,14 @@ do
 
 	mkdir -p ${profile}/${clusterProfile}
 
-	cp ${SIMULATOR_HOME}/simulator-tests/* ${profile}/${clusterProfile}/
+	cp ${SIMULATOR_HOME}/simulator-tests/test.properties ${profile}/${clusterProfile}/
+        cp ~/configuration/simulator.properties ${profile}/${clusterProfile}/
+        cp ~/configuration/run ${profile}/${clusterProfile}/
 
-	sed -i s/'boxCount=$1'/boxCount=${boxCount}/g ${profile}/${clusterProfile}/run.sh
-	sed -i s/'members=$2'/members=${members}/g ${profile}/${clusterProfile}/run.sh
-	sed -i s/'clients=$3'/clients=${clients}/g ${profile}/${clusterProfile}/run.sh
-	sed -i s/'duration=$4'/duration=${duration}/g ${profile}/${clusterProfile}/run.sh
+	sed -i s/'boxCount=$1'/boxCount=${boxCount}/g ${profile}/${clusterProfile}/run
+        sed -i s/'memberBox=$2'/memberBox=${memberBox}/g ${profile}/${clusterProfile}/run
+	sed -i s/'members=$3'/members=${members}/g ${profile}/${clusterProfile}/run
+	sed -i s/'clients=$4'/clients=${clients}/g ${profile}/${clusterProfile}/run
+	sed -i s/'duration=$5'/duration=${duration}/g ${profile}/${clusterProfile}/run
 	sed -i s/'HAZELCAST_VERSION_SPEC=maven=???'/HAZELCAST_VERSION_SPEC=maven=${profile}/g ${profile}/${clusterProfile}/simulator.properties
 done
