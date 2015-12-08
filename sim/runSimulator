@@ -80,7 +80,7 @@ setSimulatorProps () {
  fi
 
  if [ "$lab" == "true" ]; then
-   cp -fr ~/hz-lab/. .
+   cp -fr ~/lab/. .
  fi 
 
  hzVersion=$(getHazelcastVersion)

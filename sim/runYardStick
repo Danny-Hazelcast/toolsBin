@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 servers=3
 drivers=1
 machienSpec=""
@@ -224,9 +225,9 @@ cd hazelcastMaster-Vs-IgniteMaster
 runHazelcastVsIgnite
 cd ..
 
-#mkdir -p hazelcastMaster-Vs-hazelcast-${hzTag}
-#cp agents.txt hazelcastMaster-Vs-hazelcast-${hzTag} &> /dev/null
-#cd hazelcastMaster-Vs-hazelcast-${hzTag}
-#runHazelcastVsHazelcast
-#checkPerfRegresion
-#cd ..
+mkdir -p hazelcastMaster-Vs-hazelcast-${hzTag}
+cp agents.txt hazelcastMaster-Vs-hazelcast-${hzTag} &> /dev/null
+cd hazelcastMaster-Vs-hazelcast-${hzTag}
+runHazelcastVsHazelcast
+checkPerfRegresion
+cd ..
