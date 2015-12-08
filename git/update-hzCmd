@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -e
+
+update-repo "${HZ_CLUSTER}" $1 $2
+
+cd "${HZ_CLUSTER}"
+
+#mvn assembly:assembly -DdescriptorId=jar-with-dependencies
+
+mvn -P qa clean install -DskipTestss
