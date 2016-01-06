@@ -86,6 +86,7 @@ setSimulatorProps () {
 
  if [ "$lab" == "true" ]; then
    cp -fr ~/lab/. .
+   sshAll 'sudo killall -9 java'
  fi
 
  hzVersion=$(getHazelcastVersion)
