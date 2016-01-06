@@ -1,59 +1,62 @@
 #!/usr/bin/env bash
 
-duration=${1:-48h}
+duration=$1
 
-profile=$(getHazelcastVersion)
-echo "version to test ${profile}"
+if [ $# -eq 0 ]; then
+    echo "duration required e.g:  5m 6h 48h"; exit 1
+fi
 
-declare -a clusterProfileList=("test" "small" "medium" "large" "xlarge")
-boxCount=0
-memberBox=0
-members=0
-clients=0
 
-for clusterProfile in "${clusterProfileList[@]}" 
-do
-	case $clusterProfile in
-	    test)
-        	boxCount=2
-	        members=2
-        	clients=2
-        	;;
-	    small)
-	        boxCount=4
-	        members=4
-	        clients=8
-	        ;;
-	    medium)
-	        boxCount=6
-	        members=6
-	        clients=24
-	        ;;
-	    large)
-	        boxCount=10
-	        members=10
-	        clients=50
-	        ;;
-	    xlarge)
-	        boxCount=25
-	        members=25
-	        clients=100
-	        ;;
-	    *)
-	        echo "Unknown cluster size"
-	        exit 1
-	esac
+hzVersion=$(getHazelcastVersion)
+echo "version to test ${hzVersion}"
 
-	mkdir -p ${profile}/${clusterProfile}
+function setup {
 
-	cp ${SIMULATOR_HOME}/simulator-tests/test.properties ${profile}/${clusterProfile}/
-        cp ~/configuration/simulator.properties ${profile}/${clusterProfile}/
-        cp ~/configuration/run ${profile}/${clusterProfile}/
+ ee=$1
+ boxCount=$2
+ memberBox=$3
+ members=$4
+ clients=$5
+ clusterProfile=$6
+ 
+ startBox=$7
+ endBox=$8
 
-	sed -i s/'boxCount=$1'/boxCount=${boxCount}/g ${profile}/${clusterProfile}/run
-        sed -i s/'memberBox=$2'/memberBox=${memberBox}/g ${profile}/${clusterProfile}/run
-	sed -i s/'members=$3'/members=${members}/g ${profile}/${clusterProfile}/run
-	sed -i s/'clients=$4'/clients=${clients}/g ${profile}/${clusterProfile}/run
-	sed -i s/'duration=$5'/duration=${duration}/g ${profile}/${clusterProfile}/run
-	sed -i s/'HAZELCAST_VERSION_SPEC=maven=???'/HAZELCAST_VERSION_SPEC=maven=${profile}/g ${profile}/${clusterProfile}/simulator.properties
-done
+        local="${hzVersion}/${ee}/${clusterProfile}"
+    	mkdir -p ${local}
+        cp ${SIMULATOR_HOME}/simulator-tests/test.properties ${local}/
+        cp ~/configuration/simulator.properties ${local}/
+        cp ~/configuration/run ${local}/
+
+        if [ "$ee" == "ee" ]; then
+          cp -fr $SIM_EE_TEST_DIR/ee-simulator-tests/. ${local}/
+        fi
+  
+	sed -i s/'boxCount=$1'/boxCount=${boxCount}/g ${local}/run
+        sed -i s/'memberBox=$2'/memberBox=${memberBox}/g ${local}/run
+	sed -i s/'members=$3'/members=${members}/g ${local}/run
+	sed -i s/'clients=$4'/clients=${clients}/g ${local}/run
+	sed -i s/'duration=$5'/duration=${duration}/g ${local}/run
+
+          sed -i s/'ee=$6'/ee=false/g ${local}/run
+
+        if [ "$ee" == "ee" ]; then
+          sed -i s/'ee=$6'/ee=true/g ${local}/run
+	fi
+
+        if [ "$clusterProfile" == "lab" ]; then
+          cp ~/lab/* ${local}/
+          sed -i -n ${startBox},${endBox}p ${local}/agents.txt
+        fi
+
+        sed -i s/'HAZELCAST_VERSION_SPEC=maven=???'/HAZELCAST_VERSION_SPEC=maven=${hzVersion}/g ${local}/simulator.properties
+}
+
+setup  os  4   0  4   8    small
+setup  os  10  0  10  50   large
+setup  os  25  0  25  100  xlarge
+
+setup  ee  4   0  4   8    small
+setup  ee  10  0  10  50   large
+setup  ee  25  0  25  100  xlarge
+setup  ee  7   0  7   700  lab 1 7

@@ -2,9 +2,9 @@
 
 set -e
 
-update-repo "${HZ_CLUSTER}" $1 $2
+update-repo "${HZ_CMD}" $1 $2
 
-cd "${HZ_CLUSTER}"
+cd "${HZ_CMD}"
 
 #mvn assembly:assembly -DdescriptorId=jar-with-dependencies
 

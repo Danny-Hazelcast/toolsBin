@@ -1,8 +1,14 @@
 
-#japi-compliance-checker OLD.jar NEW.jar
 
 old=$1
+update-hazelcast $old
+update-hazelcast-ee $old
+old=$(getHazelcastVersion)
+
 new=$2
+update-hazelcast $new
+update-hazelcast-ee $new
+new=$(getHazelcastVersion)
 
 oldjar=$(find ~/.m2 -name hazelcast-all-$old.jar)
 echo $oldjar

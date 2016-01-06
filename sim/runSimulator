@@ -4,11 +4,14 @@ set -e
 
 cleanup() {
     exitCode=$?
-    provisioner --terminate || true
+
+    if [ "$killBox" == "true" ]; then
+      provisioner --terminate || true
+    fi
 
     hear=$(pwd | grep -oh workspace.*)
     echo http://54.87.52.100/~jenkins/${hear}
-    if (( $exitCode != 0 )) ; then 
+    if (( $exitCode != 0 )) ; then
       slackPost simulator-fail FAIL \<http://54.87.52.100/~jenkins/${hear}\>
     fi
     exit $exitCode
@@ -27,17 +30,18 @@ testDir=""
 hazelcastVersion="master"
 simulatorVersion='master'
 lab="false"
+killBox="true"
 
-OPTS=`getopt -o : --long  boxCount:,memberBox:,members:,clients:,duration:,ee:,machienSpec:,testDir:,hazelcastVersion:,simulatorVersion:,lab: -n 'parse-options' -- "$@"` || { echo "Failed parsing options." >&2 ; exit 1; }
+OPTS=`getopt -o : --long  boxCount:,memberBox:,members:,clients:,duration:,ee:,machienSpec:,testDir:,hazelcastVersion:,simulatorVersion:,lab:,killBox: -n 'parse-options' -- "$@"` || { echo "Failed parsing options." >&2 ; exit 1; }
 
-initCmdArgs () { 
+initCmdArgs () {
  eval set -- "$OPTS"
-  
+
  while true; do
   case "$1" in
     --ee ) ee="$2"; shift 2 ;;
     --boxCount ) boxCount="$2"; shift 2 ;;
-    --memberBox ) memberBox="$2"; shift 2 ;; 
+    --memberBox ) memberBox="$2"; shift 2 ;;
     --members ) members="$2"; shift 2 ;;
     --clients ) clients="$2"; shift 2 ;;
     --duration ) duration="$2"; shift 2  ;;
@@ -46,6 +50,7 @@ initCmdArgs () {
     --hazelcastVersion ) hazelcastVersion="$2"; shift 2  ;;
     --simulatorVersion ) simulatorVersion="$2"; shift 2  ;;
     --lab ) lab="$2"; shift 2 ;;
+    --killBox ) killBox="$2"; shift 2 ;;
     -- ) shift; break ;;
     * ) break ;;
   esac
@@ -55,8 +60,8 @@ initCmdArgs () {
 updateRepos () {
  update-simulator ${simulatorVersion}
  update-hazelcast ${hazelcastVersion}
-      
- if [ "$ee" == "true" ]; then 
+
+ if [ "$ee" == "true" ]; then
     update-hazelcast-ee ${hazelcastVersion} build
  fi
 
@@ -81,7 +86,7 @@ setSimulatorProps () {
 
  if [ "$lab" == "true" ]; then
    cp -fr ~/lab/. .
- fi 
+ fi
 
  hzVersion=$(getHazelcastVersion)
  sed -i s/maven=.*/maven="${hzVersion}"/ simulator.properties
@@ -110,4 +115,5 @@ mainFunction () {
  exit $exitCode
 }
 
-mainFunction 
+mainFunction
+

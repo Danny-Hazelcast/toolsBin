@@ -5,7 +5,7 @@ idx=$2
 title=$3
 yAxisTitle=$4
 
-files=$(ls ${FILE_PATTERN} | xargs -n1 -I% echo -n " \"%\" using 1:$idx with lines,")
+files=$(find . -wholename ${FILE_PATTERN} | xargs -n1 -I% echo -n " \"%\" using 1:$idx with lines,")
 
 files="${files%?}"
 
@@ -19,7 +19,7 @@ set ylabel "${yAxisTitle}"
 set title "${title}"
 
 set terminal png enhanced size 1280,1024
-set output "gc-plot.png"
+set output "${title}-${yAxisTitle}.png"
 set key left top
 plot $files
 
@@ -27,5 +27,3 @@ EOF
 
 gnuplot plotScript
 
-
-#set output "${title}-${yAxisTitle}.png"

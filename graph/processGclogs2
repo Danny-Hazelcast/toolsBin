@@ -18,9 +18,11 @@ for logFile in $gclogs ; do
  grep "Full" ${logFile} | awk '{print $1 $14}' | sed 's/user=//g' > ${d}/fullGcUserTime.txt
  grep "Full" ${logFile} | awk '{print $1 $16}' | sed 's/real=//g' > ${d}/fullGcRealTime.txt
 
- cat ${logFile} | sed '/\[GC/{N;s/\n/ /;}' | sed '/\[GC/{N;s/\n/ /;}' | grep '\[PSYoungGen' | awk '{print $1 $15}' | sed 's/-.*//' | sed 's/K//' > ${d}/YoungGenBefor.txt
- cat ${logFile} | sed '/\[GC/{N;s/\n/ /;}' | sed '/\[GC/{N;s/\n/ /;}' | grep '\[PSYoungGen' | awk '{print $1 $15}' | sed 's/:.*>/:/' | sed 's/K.*//' > ${d}/YoungGenAfter.txt
- cat ${logFile} | sed '/\[GC/{N;s/\n/ /;}' | sed '/\[GC/{N;s/\n/ /;}' | grep '\[PSYoungGen' | awk '{print $1 $15}' | sed 's/:.*(/:/' | sed 's/K.*//' > ${d}/YoungGenCapacity.txt
+
+ cat ${logFile} | sed '/\[GC/{N;s/\n/ /;}' | sed '/\[GC/{N;s/\n/ /;}' | grep '\[PSYoungGen' | awk '{print $1 $15}' | sed 's/-.*//' | sed 's/K//' > ${d}/used-tenured-and-new-Befor.txt
+ cat ${logFile} | sed '/\[GC/{N;s/\n/ /;}' | sed '/\[GC/{N;s/\n/ /;}' | grep '\[PSYoungGen' | awk '{print $1 $15}' | sed 's/:.*>/:/' | sed 's/K.*//' > ${d}/used-tenured-and-new-After.txt
+ cat ${logFile} | sed '/\[GC/{N;s/\n/ /;}' | sed '/\[GC/{N;s/\n/ /;}' | grep '\[PSYoungGen' | awk '{print $1 $15}' | sed 's/:.*(/:/' | sed 's/K.*//' > ${d}/total-tenured-and-new-Befor.txt
+
 
  cat ${logFile} | grep Full | awk '{print $1 $5}' | sed 's/-.*//' | sed 's/K//' > ${d}/fullGc-YoungGenBefor.txt 
  cat ${logFile} | grep Full | awk '{print $1 $5}' | sed 's/:.*>/:/' | sed 's/K.*//' > ${d}/fullGc-YoungGenAfter.txt
