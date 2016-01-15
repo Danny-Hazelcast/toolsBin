@@ -1,7 +1,7 @@
 set -e
 
 cleanup() {
-    provisioner --terminate || true
+    #provisioner --terminate || true
     hear=$(pwd | grep -oh workspace.*)
     echo http://54.87.52.100/~jenkins/${hear}
 }
@@ -95,15 +95,15 @@ setupHz () {
  cp ~/radargun/plugins/hazelcast3/src/main/resources/dist-sync.xml .
  initHzMembersXml agents.txt dist-sync.xml
  forIpsIn agents.txt scpUp dist-sync.xml RadarGun-bin/plugins/hazelcast3/conf
- forIpsIn agents.txt scpUp dist-sync.xml RadarGun-bin/plugins/hazelcastMaster/conf
+ #forIpsIn agents.txt scpUp dist-sync.xml RadarGun-bin/plugins/hazelcastMaster/conf
 
  hzJar=$(find ~/.m2 -name hazelcast-${hzOlderVersion}.jar)
  sshAll 'rm RadarGun-bin/plugins/hazelcast3/lib/hazelcast-*.jar'
  forIpsIn agents.txt scpUp ${hzJar} RadarGun-bin/plugins/hazelcast3/lib
 
- hzJar=$(find ~/.m2 -name hazelcast-${hzHatMasterVersion}.jar)
- sshAll	'rm RadarGun-bin/plugins/hazelcastMaster/lib/hazelcast-*.jar'
- forIpsIn agents.txt scpUp ${hzJar} RadarGun-bin/plugins/hazelcastMaster/lib
+ #hzJar=$(find ~/.m2 -name hazelcast-${hzHatMasterVersion}.jar)
+ #sshAll	'rm RadarGun-bin/plugins/hazelcastMaster/lib/hazelcast-*.jar'
+ #forIpsIn agents.txt scpUp ${hzJar} RadarGun-bin/plugins/hazelcastMaster/lib
 }
 
 setupInfin () {
@@ -134,7 +134,8 @@ runBench () {
 runAllBench () {
  cp ~/radargun/core/src/main/resources/hz-benchmark*.xml .
  for bench in hz-benchmark-*.xml ; do
-  sed -i -e "s/\${hzOlderVersion}/${hzOlderVersion}/" -e "s/\${hzHatMasterVersion}/${hzHatMasterVersion}/" ${bench}
+#  sed -i -e "s/\${hzOlderVersion}/${hzOlderVersion}/" -e "s/\${hzHatMasterVersion}/${hzHatMasterVersion}/" ${bench}
+  sed -i -e "s/\${hzOlderVersion}/${hzOlderVersion}/" ${bench}
   sed -i -e "s/\${clusterMin}/${clusterMin}/" -e "s/\${clusterMax}/${boxCount}/" -e "s/\${clusterInc}/${clusterInc}/" ${bench}
   runBench ${bench} $(basename ${bench} .xml)
  done
@@ -149,8 +150,8 @@ main () {
  setupEnviromentScript
 
  setupHz
- setupCohearance
- setupInfin
+ #setupCohearance
+ #setupInfin
  
  runAllBench
 }

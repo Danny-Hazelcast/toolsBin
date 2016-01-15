@@ -16,7 +16,7 @@ version=""
 remoteUser='ec2-user'
 
 cleanup() {
-    #provisioner --terminate
+    provisioner --terminate
     echo "end"
 }
 
@@ -48,7 +48,7 @@ initBoxes () {
 }
 
 setLatestIgnite () {
- #update-ignite "${1}" build
+ update-ignite "${1}" build
  version=$(getIgniteVersion)
 
  sshAll 'rm yardstick-ignite/libs/ignite-aws*' ec2-user
@@ -65,7 +65,7 @@ setLatestIgnite () {
 setLatestHazelcast () {
  sshAll 'rm yardstick-hazelcast/libs/hazelcast-*.jar' ec2-user
 
- #update-hazelcast "${1}" build
+ update-hazelcast "${1}" build
  version=$(getHazelcastVersion)
 
  if [ "$ee" == "true" ]; then
@@ -129,10 +129,17 @@ runYardstickHz () {
   benchMarkfile=benchmark-ec2.properties
  fi
 
+ hzClientXml=hazelcast-client-config.xml
+
  cp ${YARD_HZ}/config/${hzXmlFile} .
+ cp ${YARD_HZ}/config/${hzClientXml} .
+
  initHzMembersXml agents.txt ${hzXmlFile}
  initHzKeyXml ${hzXmlFile}
+ initHzClientXml ${hzClientXml}
+
  forIpsIn agents.txt scpUp ${hzXmlFile} yardstick-hazelcast/config/ ec2-user
+ forIpsIn agents.txt scpUp ${hzClientXml} yardstick-hazelcast/config/ ec2-user
 
  forIpAt 1 agents.txt sshCmd "cd  yardstick-hazelcast/bin; ./benchmark-run-all.sh ../config/${benchMarkfile}" ec2-user
  collectResults yardstick-hazelcast
@@ -213,7 +220,7 @@ initCmdArgs
 initSimulatorProperties
 
 awsCreate $(( servers + drivers )) jenkins-ec2
-#initBoxes
+initBoxes
 
 serverIps=$(forPrivateIpsIn agents.txt echo | sed -n 1,${servers}p | linesByComma)
 to=$((servers+1))
@@ -228,16 +235,16 @@ driverIps=$(forPrivateIpsIn agents.txt echo | sed -n ${to},${from}p | linesByCom
 #runHazelcastVsIgnite
 #cd ..
 
-mkdir -p hazelcast-${hzTag}-Vs-IgniteMaster
-cp agents.txt hazelcast-${hzTag}-Vs-IgniteMaster &> /dev/null
-cp simulator.properties hazelcast-${hzTag}-Vs-IgniteMaster &> /dev/null
-cd hazelcast-${hzTag}-Vs-IgniteMaster
-runHazelcastVsIgnite ${hzTag}
-cd ..
-
-#mkdir -p hazelcastMaster-Vs-hazelcast-${hzTag}
-#cp agents.txt hazelcastMaster-Vs-hazelcast-${hzTag} &> /dev/null
-#cd hazelcastMaster-Vs-hazelcast-${hzTag}
-#runHazelcastVsHazelcast
-#checkPerfRegresion
+#mkdir -p hazelcast-${hzTag}-Vs-IgniteMaster
+#cp agents.txt hazelcast-${hzTag}-Vs-IgniteMaster &> /dev/null
+#cp simulator.properties hazelcast-${hzTag}-Vs-IgniteMaster &> /dev/null
+#cd hazelcast-${hzTag}-Vs-IgniteMaster
+#runHazelcastVsIgnite ${hzTag}
 #cd ..
+
+mkdir -p hazelcastMaster-Vs-hazelcast-${hzTag}
+cp agents.txt hazelcastMaster-Vs-hazelcast-${hzTag} &> /dev/null
+cd hazelcastMaster-Vs-hazelcast-${hzTag}
+runHazelcastVsHazelcast
+checkPerfRegresion
+cd ..
