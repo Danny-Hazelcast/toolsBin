@@ -235,12 +235,12 @@ driverIps=$(forPrivateIpsIn agents.txt echo | sed -n ${to},${from}p | linesByCom
 #runHazelcastVsIgnite
 #cd ..
 
-#mkdir -p hazelcast-${hzTag}-Vs-IgniteMaster
-#cp agents.txt hazelcast-${hzTag}-Vs-IgniteMaster &> /dev/null
-#cp simulator.properties hazelcast-${hzTag}-Vs-IgniteMaster &> /dev/null
-#cd hazelcast-${hzTag}-Vs-IgniteMaster
-#runHazelcastVsIgnite ${hzTag}
-#cd ..
+mkdir -p hazelcast-${hzTag}-Vs-IgniteMaster
+cp agents.txt hazelcast-${hzTag}-Vs-IgniteMaster &> /dev/null
+cp simulator.properties hazelcast-${hzTag}-Vs-IgniteMaster &> /dev/null
+cd hazelcast-${hzTag}-Vs-IgniteMaster
+runHazelcastVsIgnite ${hzTag}
+cd ..
 
 mkdir -p hazelcastMaster-Vs-hazelcast-${hzTag}
 cp agents.txt hazelcastMaster-Vs-hazelcast-${hzTag} &> /dev/null

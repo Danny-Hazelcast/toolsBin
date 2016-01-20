@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+FILE_PATTERN=$1
+title=$2
+yAxisTitle=$3
+
+files=$(find . -name ${FILE_PATTERN} | xargs -n1 -I% echo -n " \"%\" with lines,")
+files="${files%?}"
+
+cat > plotScript << EOF
+
+set datafile commentschars '#!%"'
+
+set xlabel "Time"
+set ylabel "${yAxisTitle}"
+set title "${title}"
+
+set terminal png enhanced size 1280,1024
+set output "${title}-${yAxisTitle}.png"
+set key left top
+plot $files
+
+EOF
+
+gnuplot plotScript
+

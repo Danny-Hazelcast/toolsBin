@@ -1,0 +1,27 @@
+
+#grep out the fields for a performance log file if they change
+#cat temp.txt | awk '{print "\""$1"\""}' | sed ':a;N;$!ba;s/\n/ /g'
+declare -a fields=("classloading.loadedClassesCount" "classloading.totalLoadedClassesCount" "classloading.unloadedClassCount" "client.endpoint.count" "client.endpoint.totalRegistrations" "cluster.clock.clusterTimeDiff" "executor.hz:async.queueSize" "executor.hz:client.queueSize" "executor.hz:cluster.queueSize" "executor.hz:cluster:event.queueSize" "executor.hz:scheduled.queueSize" "executor.hz:scheduled:cqc:62a746ff-5f02-42ec-9145-5c96dbc635d1.queueSize" "executor.hz:system.queueSize" "gc.majorCount" "gc.majorTime" "gc.minorCount" "gc.minorTime" "gc.unknownCount" "gc.unknownTime" "operation.callTimeoutCount" "operation.completed.count" "operation.invocations.backupTimeouts" "operation.invocations.normalTimeouts" "operation.invocations.pending" "operation.operationTimeoutCount" "operation.priority-queue.size" "operation.queue.size" "operation.response-queue.size" "operation.response.backup.count" "operation.response.error.count" "operation.response.normal.count" "operation.response.timeout.count" "operation.retryCount" "os.committedVirtualMemorySize" "os.freePhysicalMemorySize" "os.freeSwapSpaceSize" "os.maxFileDescriptorCount" "os.openFileDescriptorCount" "os.processCpuLoad" "os.processCpuTime" "os.systemCpuLoad" "os.systemLoadAverage" "os.totalPhysicalMemorySize" "os.totalSwapSpaceSize" "proxy.createdCount" "proxy.destroyedCount" "runtime.availableProcessors" "runtime.freeMemory" "runtime.maxMemory" "runtime.totalMemory" "runtime.uptime" "runtime.usedMemory" "tcp.connection.acceptedSocketCount" "tcp.connection.activeCount" "tcp.connection.clientCount" "tcp.connection.count" "tcp.connection.textCount" "thread.daemonThreadCount" "thread.peakThreadCount" "thread.threadCount" "thread.totalStartedThreadCount")
+
+files=$(find . -name performance*.log)
+
+if [[ "$files" == "" ]] ; then
+ exit
+fi
+
+currentDir=$(pwd)
+while read -r line; do
+  dir=$(dirname $line)
+  cd $dir
+   for f in "${fields[@]}"; do
+
+    grep ${f} performance*.log | awk '{print $3}' > $f.txt
+
+    done
+  cd ${currentDir}
+done <<< "$files"
+
+for f in "${fields[@]}"; do
+  plotSingleCol $f.txt $f value
+done
+
