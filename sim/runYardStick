@@ -198,7 +198,7 @@ checkPerfRegresion () {
   new=$(xidel -e '//html/body/div/div[1]/div[2]/div/div[1]/table/tbody/tr[1]/td[2]' ${f} | tr -d ",")
   old=$(xidel -e '//html/body/div/div[1]/div[2]/div/div[1]/table/tbody/tr[2]/td[2]' ${f} | tr -d ",")
 
-  if (( $(bc <<< "$old > $new") == 1 )) ; then
+  if (( $(bc <<< "$old > $new * 1.06") == 1 )) ; then
    echo "old $old > new $new"
 
    there=$(echo $f | tr -d ".")

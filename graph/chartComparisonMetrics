@@ -1,0 +1,24 @@
+
+a=$1
+b=$2
+
+find . -name *${a}*.csv | xargs -n1 basename | sort | uniq > a.txt
+
+find . -name *${b}*.csv | xargs -n1 basename | sort | uniq > b.txt
+
+paste a.txt b.txt > a-and-b.txt
+
+while read line; do
+  f=($line)
+  echo ${f[0]}  '<-->'  ${f[1]}
+
+  find . -name ${f[0]}
+  find . -name ${f[1]}
+
+  compairMetrics ${f[0]} ${f[1]} "${f[0]}-VS-${f[1]}"
+  
+done < a-and-b.txt
+
+mkdir ${a}-vs-${b}
+mv *.png ${a}-vs-${b}/
+
