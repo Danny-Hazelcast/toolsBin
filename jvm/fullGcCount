@@ -1,0 +1,1 @@
+find . -name verbosegc.log | xargs -I% -n1 sh -c "echo %; grep Full % | wc -l"

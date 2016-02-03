@@ -6,19 +6,19 @@ b=$2
 title=$3
 keyState=${4:-on}
 
-compairPlot ${a} ${b} 2 ${title} count ${keyState}
-compairPlot ${a} ${b} 13 ${title} mean-rate ${keyState}
-compairPlot ${a} ${b} 14 ${title} 1min-rate ${keyState}
-compairPlot ${a} ${b} 15 ${title} 5min-rate ${keyState}
-compairPlot ${a} ${b} 16 ${title} 15min-rate ${keyState}
+compairPlot-realTime ${a} ${b} 2 ${title} count ${keyState}
+compairPlot-realTime ${a} ${b} 13 ${title} mean-rate ${keyState}
+compairPlot-realTime ${a} ${b} 14 ${title} 1min-rate ${keyState}
+compairPlot-realTime ${a} ${b} 15 ${title} 5min-rate ${keyState}
+compairPlot-realTime ${a} ${b} 16 ${title} 15min-rate ${keyState}
 
-compairPlot ${a} ${b} 5 ${title} min-latency ${keyState}
-compairPlot ${a} ${b} 3 ${title} max-latency ${keyState}
-compairPlot ${a} ${b} 4 ${title} mean-latency ${keyState}
-compairPlot ${a} ${b} 6 ${title} stdDev-latency ${keyState}
+compairPlot-realTime ${a} ${b} 5 ${title} min-latency ${keyState}
+compairPlot-realTime ${a} ${b} 3 ${title} max-latency ${keyState}
+compairPlot-realTime ${a} ${b} 4 ${title} mean-latency ${keyState}
+compairPlot-realTime ${a} ${b} 6 ${title} stdDev-latency ${keyState}
 
-compairPlot ${a} ${b} 8 ${title} 75-latency-percentile ${keyState}
-compairPlot ${a} ${b} 9 ${title} 95-latency-percentile ${keyState}
-compairPlot ${a} ${b} 10 ${title} 98-latency-percentile ${keyState}
-compairPlot ${a} ${b} 11 ${title} 99-latency-percentile ${keyState}
-compairPlot ${a} ${b} 12 ${title} 999-latency-percentile ${keyState}
+compairPlot-realTime ${a} ${b} 8 ${title} 75-latency-percentile ${keyState}
+compairPlot-realTime ${a} ${b} 9 ${title} 95-latency-percentile ${keyState}
+compairPlot-realTime ${a} ${b} 10 ${title} 98-latency-percentile ${keyState}
+compairPlot-realTime ${a} ${b} 11 ${title} 99-latency-percentile ${keyState}
+compairPlot-realTime ${a} ${b} 12 ${title} 999-latency-percentile ${keyState}
